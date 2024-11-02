@@ -1,1 +1,32 @@
+# Virtual environment
 /myenv
+
+# Django-specific
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Environment variables
+.env
+
+# Media and Static files
+/media/
+/staticfiles/
+/static/
+
+# OS-specific files
+.DS_Store
+
+# VS Code files
+.vscode/
+
+# Python bytecode
+*.pyo
+*.pyd
+
+# Byte-compiled / optimized / DLL files
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
