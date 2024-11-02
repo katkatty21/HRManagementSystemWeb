@@ -23,18 +23,48 @@ From Creating Environment Up to Github Upload
     8. Create app
             cd projectname
             django-adin startapp appname
-
-    
-    
-    
-
-
+    9. Continuation through .py files
+!!! Make sure to check directories and file arrangements
+            
 #UI
 CSS Framework: Tailwind CSS
+    ##Installation Instructions
+        1. In settings.py, INSTALLED_APPS
+            - add 'tailwind', 
+        2. In Powershell (myenv)
+            - python -m pip install django-tailwind
+            - cd to project then python manage.py tailwind init
+            - app_name[theme]? type "theme"
+            - add 'theme' and django_browser_reload on INSTALLED_APPS in setting.py
+            - pip install django-browser-reload
+        3. Settings.py
+            - Add code line TAILWIND_APP_NAME = 'theme'
+            - Add INTERNAL_IPS = ["127.0.0.1",]
+        4. MIDDLEWARE
+            -add to the last "django_browser_reload.middleware.BrowserReloadMiddleware",
+        5. In projects urls.py
+            -add path("__reload__/", include("django_browser_reload.urls")),
+        6. python managge.py tailwind start
 
-##Installation Instructions
-    1. 
+https://www.youtube.com/watch?v=GepQBpHNgrk 
+            
 
 #DATABASE
+---POSTGRESQL
+Installations
+    1. Download Postgresql .exe https://www.postgresql.org/ftp/pgadmin/pgadmin4/v8.12/windows/ 
+    2. Install Necessary, pgAdmin
+    3. Create the Database through pgAdmin, name it dbhrmanagement, Just check my files sa database sa settings (Right click in pgAdmin to execute commands)
+        - General Tab then Owner is Postgres
+        - Definition 
+            Econding - UTF8
+            Tablespace -pd_default
+            Collation and Character - english / en_US/
+        - Security
+            - Privileges
+                - Grantee fyang
+                - else ALL 
+    4. create your models, modify setting.py
+
 
 #DJANGO ADMIN
