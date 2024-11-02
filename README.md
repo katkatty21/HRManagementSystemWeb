@@ -13,7 +13,7 @@ From Creating Environment Up to Github Upload
     3. Create the environment
             virtualenv myenv
     4. Activate
-            VS Code : myenv\Scripts\activate
+            VS Code : myenv\Scripts\activate (mas better for github purposes)
             cmd: .\myenv\Scripts\activate
     5. Should have (myenv) on the left side
     6. Install Django
@@ -23,6 +23,8 @@ From Creating Environment Up to Github Upload
     8. Create app
             cd projectname
             django-adin startapp appname
+
+    
     
     
 
