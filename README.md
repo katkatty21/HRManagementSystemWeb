@@ -2,5 +2,4 @@
 
 #DATABASE
 
-
 #DJANGO ADMIN
