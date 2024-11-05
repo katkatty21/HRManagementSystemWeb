@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/katkatty21/HRManagementSystemWeb">
-    <img src="img/logoText.png" alt="Logo" width="80" height="80">
+    <img src="static/img/logoText.png" alt="Logo" width="80" height="80">
   </a>
 
 From Creating Environment Up to Github Upload
