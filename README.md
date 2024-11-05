@@ -1,9 +1,6 @@
 <!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/katkatty21/HRManagementSystemWeb">
-    <img src="img/logoText.png" alt="Logo" width="80" height="80">
-  </a>
+![logoText](https://github.com/user-attachments/assets/c56ec18e-af4d-42a2-8def-772cbefbb604)
+
 
 From Creating Environment Up to Github Upload
 
