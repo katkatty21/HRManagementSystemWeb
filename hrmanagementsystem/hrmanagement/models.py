@@ -182,3 +182,10 @@ class Applicant(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.job_opening.job.job_title}"
+    
+class Training(models.Model):
+    training_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='trainings')
+    training_name = models.CharField(max_length=500)
+    description = models.TextField
+    
