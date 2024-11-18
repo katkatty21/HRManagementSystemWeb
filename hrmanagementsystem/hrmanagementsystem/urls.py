@@ -18,8 +18,10 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
+from hrmanagement import views  
 
 urlpatterns = [
+    path('admin/login/', views.custom_admin_login, name='custom_admin_login'), 
     path('admin/', admin.site.urls),
     path('', include('hrmanagement.urls')),
     path("__reload__/", include("django_browser_reload.urls"))

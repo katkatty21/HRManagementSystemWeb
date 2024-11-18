@@ -1,5 +1,8 @@
 import uuid
+import os
+import random
 from django.db import models
+from django.utils.html import mark_safe, format_html
 
 class Department(models.Model):
     department_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -32,8 +35,14 @@ class EmployeeInformation(models.Model):
         ('Widowed', 'Widowed'),
     ]
 
+    def upload_profile_picture(instance, filename):
+        ext = filename.split('.')[-1]  # Get file extension
+        # Generate filename with first name, last name, and UUID to ensure uniqueness
+        filename = f"{instance.first_name}_{instance.last_name}_{uuid.uuid4()}.{ext}"
+        return os.path.join('photos', 'employees', filename)
+
     employee_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    profile_picture = models.ImageField(upload_to='photos/%Y/%m/%d/')
+    profile_picture = models.ImageField(upload_to=upload_profile_picture)
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100)
@@ -75,6 +84,10 @@ class EmployeeInformation(models.Model):
     )
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="employee_jobs")
 
+    def profile_preview(self):
+        return mark_safe(f'<img src="{self.profile_picture.url}" alt="" width="50px" height="50px" style="border-radius: 50%;"/>')
+
+
     def __str__(self):
         return f"{self.first_name} {self.middle_name} {self.last_name}"
 
@@ -100,7 +113,7 @@ class UserAccount(models.Model):
 
 ##Sophie Seismundo
 
-class AdminPayroll(models.Model):
+class EmployeePayroll(models.Model):
     payroll_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='payrolls')
     pay_period_start = models.DateField()
@@ -163,15 +176,33 @@ class JobOpening(models.Model):
     def __str__(self):
         return f"Opening for {self.job.job_title} in {self.department.department_name}"
 
+def generate_custom_applicant_id():
+    random_digits = f"{random.randint(10000, 99999)}"
+    random_letters = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', k=4))
+    random_suffix = f"{random.randint(100, 999)}"
+    return f"Applicant-{random_digits}-{random_letters}-{random_suffix}"
+
+def upload_resume(instance, filename):
+    # Extract the file extension
+    ext = filename.split('.')[-1]
+    # Create a new filename with the applicant's first and last name
+    filename = f"{instance.first_name}_{instance.last_name}_resume.{ext}"
+    return os.path.join('uploads/resumes/', filename)
+
 class Applicant(models.Model):
-    applicant_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    applicant_id = models.CharField(
+        max_length=30, 
+        primary_key=True, 
+        editable=False, 
+        default=generate_custom_applicant_id
+    )
     job_opening = models.ForeignKey(JobOpening, on_delete=models.CASCADE, related_name="applicants")
     first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     email = models.EmailField(max_length=100)
-    resume = models.FileField(upload_to='uploads/resumes/')  
+    resume = models.FileField(upload_to=upload_resume)  
     interview_date = models.DateField(null=True, blank=True)
     applicant_status = models.CharField(max_length=20, choices=[
         ('Applied', 'Applied'), 
@@ -180,12 +211,73 @@ class Applicant(models.Model):
         ('Rejected', 'Rejected')
     ], default='Applied')
 
+    def resume_preview(self):
+        if self.resume:
+            return format_html(f'<a href="{self.resume.url}" target="_blank">View Resume</a>')
+        return "No resume uploaded"
+
+    resume_preview.short_description = "Resume Preview"
+
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.job_opening.job.job_title}"
+
+class PerformanceReport(models.Model):
+    report_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='performance_reports')
+    report_title = models.CharField(max_length=255)
+    content = models.TextField()
+    date_created = models.DateField(auto_now_add=True)  # This is used as the "submission date"
+
+    def __str__(self):
+        return f"{self.report_title} - {self.employee.first_name} {self.employee.last_name}"
+
+
+
+class SanctionReport(models.Model):
+    sanction_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='sanction_reports')
+    sanction_reason = models.CharField(max_length=255)
+    sanction_details = models.TextField()
+    sanction_type = models.CharField(max_length=255)  
+    sanction_date = models.DateField()  
+    status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Resolved', 'Resolved')])  
+    date_created = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Sanction for {self.employee.first_name} {self.employee.last_name}: {self.sanction_reason}"
+
+
+
+class PerformanceReview(models.Model):
+    review_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='performance_reviews')
+    reviewer = models.ForeignKey(EmployeeInformation, on_delete=models.SET_NULL, null=True, related_name='reviews_given')
+    review_comments = models.TextField()
+    review_date = models.DateField(auto_now_add=True)
+    overall_rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    performance_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True) 
+
+    def __str__(self):
+        return f"Review by {self.reviewer.first_name} {self.reviewer.last_name} for {self.employee.first_name} {self.employee.last_name}"
     
-class Training(models.Model):
-    training_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='trainings')
-    training_name = models.CharField(max_length=500)
-    description = models.TextField
-    
+class Trainings(models.Model):
+    training_id = models.CharField(max_length=10, primary_key=True)
+    employee = models.ForeignKey(
+        EmployeeInformation,
+        on_delete=models.CASCADE,
+        related_name="trainings",
+        db_column="employee_id"
+    )
+    training_name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(max_length=20, choices=[
+        ('Scheduled', 'Scheduled'),
+        ('In Progress', 'In Progress'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled')
+    ], default='Scheduled')
+
+    def __str__(self):
+        return f"{self.training_name} ({self.employee.first_name} {self.employee.last_name})"

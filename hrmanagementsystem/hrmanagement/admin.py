@@ -1,5 +1,20 @@
 from django.contrib import admin
-from .models import Department, Job, EmployeeInformation, UserAccount, AttendanceRecord, AdminPayroll, LeaveRequest, LeaveType, JobOpening, Applicant
+from django.contrib.auth.views import LoginView
+from .models import Department, Job, EmployeeInformation, UserAccount, AttendanceRecord, EmployeePayroll, LeaveRequest, LeaveType, JobOpening, Applicant, PerformanceReport, PerformanceReview, SanctionReport, Trainings
+
+
+class CustomAdminLoginView(LoginView):
+    template_name = 'admin/login.html'
+
+class MyAdminSite(admin.AdminSite):
+    site_header = 'HR Management System'
+    login_template = 'admin/login.html'
+
+
+admin.site.__class__ = MyAdminSite
+
+
+
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
@@ -18,8 +33,9 @@ class JobAdmin(admin.ModelAdmin):
 
 @admin.register(EmployeeInformation)
 class EmployeeInformationAdmin(admin.ModelAdmin):
+    readonly_fields = ("profile_preview",)
     list_display = (
-        'first_name', 'last_name', 'sex', 'address', 
+        'profile_preview', 'first_name', 'last_name', 'sex', 'address', 
         'city', 'province', 'zip_code', 'job', 'date_hired'
     )
     list_display_links = ('first_name', 'last_name')
@@ -36,7 +52,7 @@ class UserAccountAdmin(admin.ModelAdmin):
     ordering = ('username',)
 
 
-@admin.register(AdminPayroll)
+@admin.register(EmployeePayroll)
 class AdminPayrollAdmin(admin.ModelAdmin):
     list_display = (
         'payroll_id', 'employee', 'pay_period_start', 'pay_period_end', 
@@ -82,9 +98,46 @@ class JobOpeningAdmin(admin.ModelAdmin):
 class ApplicantAdmin(admin.ModelAdmin):
     list_display = (
         'applicant_id', 'job_opening', 'first_name', 'last_name', 
-        'email', 'phone', 'applicant_status'
+        'email', 'phone','resume_preview', 'applicant_status'
     )
+    readonly_fields = ('resume_preview',)
     list_display_links = ('applicant_id', 'first_name', 'last_name')
     search_fields = ('first_name', 'last_name', 'email', 'job_opening__job__job_title')
     list_filter = ('applicant_status', 'job_opening')
     ordering = ('first_name', 'last_name')
+
+admin.site.site_header = 'HR Management System'
+
+@admin.register(PerformanceReport)
+class PerformanceReportAdmin(admin.ModelAdmin):
+    list_display = ('report_id', 'employee', 'date_created', 'report_title')  
+    list_display_links = ('report_id', 'employee')
+    search_fields = ('employee__first_name', 'employee__last_name', 'content')
+    list_filter = ('date_created',)  
+    ordering = ('date_created',)
+
+
+@admin.register(SanctionReport)
+class SanctionReportAdmin(admin.ModelAdmin):
+    list_display = ('sanction_id', 'employee', 'sanction_type', 'sanction_date', 'status')
+    list_display_links = ('sanction_id', 'employee')
+    search_fields = ('employee__first_name', 'employee__last_name', 'sanction_type')
+    list_filter = ('status', 'sanction_date')
+    ordering = ('sanction_date',)
+
+
+
+@admin.register(PerformanceReview)
+class PerformanceReviewAdmin(admin.ModelAdmin):
+    list_display = ('review_id', 'employee', 'review_date', 'reviewer', 'performance_score')
+    list_display_links = ('review_id', 'employee')
+    search_fields = ('employee__first_name', 'employee__last_name', 'review_comments', 'reviewer__first_name', 'reviewer__last_name')
+    list_filter = ('review_date', 'performance_score')  
+    ordering = ('review_date',)
+
+@admin.register(Trainings)
+class TrainingAdmin(admin.ModelAdmin):
+    list_display = ('training_id', 'training_name', 'employee', 'start_date', 'end_date', 'status')
+    search_fields = ('training_name', 'employee__first_name', 'employee__last_name', 'status')
+    list_filter = ('status', 'start_date', 'end_date')
+    ordering = ('start_date',)
