@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
+    <style>
+        /* Add some custom animation for the page */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-200 to-gray-100 fade-in">
+
+    <!-- Hero Section -->
+    <section class="text-center py-16 bg-blue-600 text-white rounded-b-3xl shadow-lg">
+        <h1 class="text-5xl font-extrabold tracking-wider animate__animated animate__fadeInUp">Mark Your Attendance</h1>
+        <p class="mt-4 text-lg font-semibold animate__animated animate__fadeInUp animate__delay-1s">Please mark your attendance before 7:00 PM</p>
+    </section>
+
+    <!-- Attendance Form Section -->
+    <div class="container mx-auto mt-8 px-4 lg:px-12">
+        <div class="bg-white p-8 rounded-lg shadow-xl transform transition duration-500 hover:scale-105 hover:shadow-2xl">
+            <h2 class="text-2xl font-semibold text-blue-600 mb-6">Employee Attendance</h2>
+
+            <form id="attendanceForm" action="{% url 'mark_attendance' %}" method="POST" onsubmit="handleSubmit(event)">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="employee_name" class="text-lg font-semibold text-gray-700">Employee Name</label>
+                        <input type="text" id="employee_name" name="employee_name" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="attendance_time" class="text-lg font-semibold text-gray-700">Attendance Time</label>
+                        <input type="time" id="attendance_time" name="attendance_time" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+                        Submit Attendance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-blue-600 text-white text-center py-4 mt-12">
+        <p>&copy; 2024 HR Management System</p>
+    </footer>
+
+    <!-- Success popup on form submission -->
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the form from submitting immediately
+
+            // Show success popup after submission
+            Swal.fire({
+                icon: 'success',
+                title: 'Attendance Recorded',
+                text: 'Your attendance has been successfully marked!',
+                confirmButtonText: 'OK',
+                background: '#f0f9ff',
+                iconColor: '#28a745',
+                confirmButtonColor: '#4CAF50',
+                timer: 3000, // This makes the popup close automatically after 3 seconds
+            }).then(() => {
+                // Now, submit the form after the popup closes
+                document.getElementById('attendanceForm').submit();
+            });
+        }
+    </script>
+
+</body>
+</html>

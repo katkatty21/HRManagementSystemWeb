@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Requests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero-bg {
+            background-image: linear-gradient(to right, rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.7)), url('https://images.unsplash.com/photo-1527682337-82e8a6a1d165');
+            background-size: cover;
+            background-position: center;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .hover-transform:hover {
+            transform: scale(1.05);
+        }
+        .transition-all {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-center py-20 text-white rounded-b-3xl shadow-lg transition-all">
+        <h1 class="text-5xl font-extrabold animate__animated animate__fadeIn">Leave Requests</h1>
+        <p class="mt-4 text-xl font-semibold animate__animated animate__fadeIn animate__delay-1s">Manage and track your leave requests effortlessly.</p>
+    </section>
+
+    <!-- Button to go back to the Attendance Management Page -->
+    <div class="container mx-auto mt-8 px-4 lg:px-12">
+        <a href="/attendance-management/" class="bg-blue-500 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+            <i class="fa fa-arrow-left"></i> Go Back to Attendance Management
+        </a>
+    </div>
+
+    <!-- Leave Requests Table -->
+    <div class="container mx-auto mt-8 px-4 lg:px-12">
+        <div class="bg-white p-8 rounded-lg card-shadow hover-transform">
+            <h2 class="text-2xl font-semibold text-blue-600 mb-6">Leave Requests List</h2>
+
+            <!-- Table for Leave Requests -->
+            <table class="min-w-full table-auto">
+                <thead>
+                    <tr class="bg-blue-500 text-white">
+                        <th class="px-6 py-3 text-left">Leave ID</th>
+                        <th class="px-6 py-3 text-left">Leave Type</th>
+                        <th class="px-6 py-3 text-left">Description</th>
+                        <th class="px-6 py-3 text-left">Start Date</th>
+                        <th class="px-6 py-3 text-left">End Date</th>
+                        <th class="px-6 py-3 text-left">Duration</th>
+                        <th class="px-6 py-3 text-left">Reason</th>
+                        <th class="px-6 py-3 text-left">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example of a leave request entry -->
+                    <tr class="border-b hover:bg-blue-50">
+                        <td class="px-6 py-4">#LR123</td>
+                        <td class="px-6 py-4">Sick Leave</td>
+                        <td class="px-6 py-4">Feeling unwell, need rest</td>
+                        <td class="px-6 py-4">2024-11-18</td>
+                        <td class="px-6 py-4">2024-11-19</td>
+                        <td class="px-6 py-4">2 days</td>
+                        <td class="px-6 py-4">Illness</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-green-500 text-white px-2 py-1 rounded-full">Approved</span>
+                        </td>
+                    </tr>
+                    <!-- Example of a pending leave request -->
+                    <tr class="border-b hover:bg-blue-50">
+                        <td class="px-6 py-4">#LR124</td>
+                        <td class="px-6 py-4">Vacation</td>
+                        <td class="px-6 py-4">Family trip to the beach</td>
+                        <td class="px-6 py-4">2024-12-05</td>
+                        <td class="px-6 py-4">2024-12-10</td>
+                        <td class="px-6 py-4">5 days</td>
+                        <td class="px-6 py-4">Family time</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-yellow-500 text-white px-2 py-1 rounded-full">Pending</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Leave Request Form Section (for adding new leave requests) -->
+    <div class="container mx-auto mt-12 px-4 lg:px-12">
+        <div class="bg-white p-8 rounded-lg card-shadow hover-transform">
+            <h2 class="text-2xl font-semibold text-blue-600 mb-6">Request New Leave</h2>
+
+            <!-- Leave Request Form -->
+            <form action="/submit-leave-request/" method="POST">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="leave_id" class="text-lg font-semibold text-gray-700">Leave ID</label>
+                        <input type="text" id="leave_id" name="leave_id" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="leave_type" class="text-lg font-semibold text-gray-700">Leave Type</label>
+                        <select id="leave_type" name="leave_type" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Vacation">Vacation</option>
+                            <option value="Personal Leave">Personal Leave</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="description" class="text-lg font-semibold text-gray-700">Description</label>
+                        <textarea id="description" name="description" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows="3" required></textarea>
+                    </div>
+                    <div>
+                        <label for="start_date" class="text-lg font-semibold text-gray-700">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="end_date" class="text-lg font-semibold text-gray-700">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="duration" class="text-lg font-semibold text-gray-700">Duration</label>
+                        <input type="text" id="duration" name="duration" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="reason" class="text-lg font-semibold text-gray-700">Reason</label>
+                        <input type="text" id="reason" name="reason" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <!-- Remove the status field from the form -->
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+                        Submit Leave Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-blue-600 text-white text-center py-4 mt-12">
+        <p>&copy; 2024 HR Management System</p>
+    </footer>
+
+</body>
+</html>
