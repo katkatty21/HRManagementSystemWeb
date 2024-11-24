@@ -68,7 +68,10 @@ ROOT_URLCONF = 'hrmanagementsystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],  # Enable project-level templates for custom admin pages
+        'DIRS': [
+            BASE_DIR / "templates",  # Project-level templates directory
+            BASE_DIR / "hrmanagement/templates",  # App-level templates directory
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 

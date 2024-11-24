@@ -3,46 +3,74 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>SRK Solutions Admin Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SRK Solutions Admin Login</title>
     <link rel="stylesheet" href="{% static 'css/custom_admin.css' %}" />
   </head>
   <body class="login">
     <div class="login-container">
       <div class="login-logo">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" />
+        <img src="{% static 'images/logo.png' %}" alt="SRK Solutions Logo" />
       </div>
+
       <h2>Welcome to the Admin Dashboard</h2>
-      <form method="post" action="{% url 'custom_admin_login' %}">
+
+      {% if messages %} {% for message in messages %}
+      <div
+        class="form-group"
+        style="
+          color: #dc2626;
+          background-color: #fee2e2;
+          padding: 10px;
+          border-radius: 4px;
+          text-align: center;
+          margin-bottom: 20px;
+        "
+      >
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %}
+
+      <form method="POST">
         {% csrf_token %}
 
-        <!-- Username Field -->
         <div class="form-group">
           <label for="username">Username:</label>
           <input
             type="text"
-            name="username"
             id="username"
-            required
+            name="username"
             class="form-input"
+            required
           />
         </div>
 
-        <!-- Password Field -->
         <div class="form-group">
           <label for="password">Password:</label>
           <input
             type="password"
-            name="password"
             id="password"
-            required
+            name="password"
             class="form-input"
+            required
           />
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="login-button">Log in</button>
       </form>
-      <p>&copy; 2024 SRK Solutions. All rights reserved.</p>
+
+      <p>
+        <a
+          href="{% url 'login' %}"
+          style="color: #007bff; text-decoration: none; font-size: 0.9em"
+        >
+          Log in as Employee
+        </a>
+      </p>
+
+      <p style="margin-top: 2em; color: #666; font-size: 0.8em">
+        © {% now "Y" %} SRK Solutions. All rights reserved.
+      </p>
     </div>
   </body>
 </html>

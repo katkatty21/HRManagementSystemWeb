@@ -1,0 +1,290 @@
+{% extends 'pages/base.html' %} {% load static %}
+{% block title %} Dashboard {% endblock %} {% block content %}
+<!-- Welcome Section -->
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-gray-800">
+    Welcome back, {{ user_name|default:"User" }}!
+  </h1>
+  <p class="text-gray-600">
+    Here's what's happening in your organization today.
+  </p>
+</div>
+
+<div class="mb-8">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Clock In/Out</p>
+        <p class="text-lg font-bold text-gray-900">
+          Current Time: <span id="current-time"></span>
+        </p>
+        <p class="text-lg font-bold text-gray-900">
+          Elapsed Time: <span id="elapsed-time">0:00:00</span>
+        </p>
+        <p class="text-sm text-gray-600">Keep track of your attendance.</p>
+      </div>
+      <div class="flex space-x-4">
+        <form method="POST" action="{% url 'clock_in' %}" id="clock-in-form">
+          {% csrf_token %}
+          <button type="submit" id="clock-in-button"
+            class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600">
+            Clock In
+          </button>
+        </form>
+        <form method="POST" id="clock-out-form">
+          {% csrf_token %}
+          <button type="submit" id="clock-out-button"
+            class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600" disabled>
+            Clock Out
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!-- Total Employees Card -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Total Employees</p>
+        <p class="text-2xl font-bold text-gray-900">245</p>
+      </div>
+      <div class="p-3 bg-blue-50 rounded-full">
+        <i class="fas fa-users text-blue-500 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4 flex items-center text-sm text-green-600">
+      <i class="fas fa-arrow-up mr-1"></i>
+      <span>12% increase</span>
+    </div>
+  </div>
+
+  <!-- Present Today Card -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Present Today</p>
+        <p class="text-2xl font-bold text-gray-900">232</p>
+      </div>
+      <div class="p-3 bg-green-50 rounded-full">
+        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4 flex items-center text-sm text-green-600">
+      <span>94.7% attendance</span>
+    </div>
+  </div>
+
+  <!-- On Leave Card -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">On Leave</p>
+        <p class="text-2xl font-bold text-gray-900">8</p>
+      </div>
+      <div class="p-3 bg-yellow-50 rounded-full">
+        <i class="fas fa-calendar-alt text-yellow-500 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4 flex items-center text-sm text-yellow-600">
+      <span>3.2% of workforce</span>
+    </div>
+  </div>
+
+  <!-- Pending Requests Card -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Pending Requests</p>
+        <p class="text-2xl font-bold text-gray-900">15</p>
+      </div>
+      <div class="p-3 bg-red-50 rounded-full">
+        <i class="fas fa-clock text-red-500 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4 flex items-center text-sm text-red-600">
+      <span>Needs attention</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Recent Activity -->
+  <div class="lg:col-span-2">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h2>
+      <div class="space-y-4">
+        <!-- Activity Item 1 -->
+        <div class="flex items-start space-x-4">
+          <div class="bg-blue-100 rounded-full p-2">
+            <i class="fas fa-user-plus text-blue-500"></i>
+          </div>
+          <div>
+            <p class="text-gray-800 font-medium">New Employee Added</p>
+            <p class="text-gray-600 text-sm">
+              John Doe joined Engineering team
+            </p>
+            <p class="text-gray-400 text-xs mt-1">2 hours ago</p>
+          </div>
+        </div>
+
+        <!-- Activity Item 2 -->
+        <div class="flex items-start space-x-4">
+          <div class="bg-green-100 rounded-full p-2">
+            <i class="fas fa-file-alt text-green-500"></i>
+          </div>
+          <div>
+            <p class="text-gray-800 font-medium">Leave Request Approved</p>
+            <p class="text-gray-600 text-sm">
+              Sarah's vacation request was approved
+            </p>
+            <p class="text-gray-400 text-xs mt-1">3 hours ago</p>
+          </div>
+        </div>
+
+        <!-- Activity Item 3 -->
+        <div class="flex items-start space-x-4">
+          <div class="bg-yellow-100 rounded-full p-2">
+            <i class="fas fa-calendar-check text-yellow-500"></i>
+          </div>
+          <div>
+            <p class="text-gray-800 font-medium">
+              Performance Review Scheduled
+            </p>
+            <p class="text-gray-600 text-sm">
+              Quarterly reviews for Design team
+            </p>
+            <p class="text-gray-400 text-xs mt-1">5 hours ago</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions & Announcements -->
+  <div class="space-y-8">
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+      <div class="space-y-3">
+        <button
+          class="w-full flex items-center justify-between p-3 bg-blue-50 rounded-lg text-blue-700 hover:bg-blue-100 transition-colors">
+          <span class="flex items-center">
+            <i class="fas fa-user-plus mr-3"></i>
+            Add New Employee
+          </span>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <button
+          class="w-full flex items-center justify-between p-3 bg-green-50 rounded-lg text-green-700 hover:bg-green-100 transition-colors">
+          <span class="flex items-center">
+            <i class="fas fa-calendar-alt mr-3"></i>
+            Schedule Meeting
+          </span>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <button
+          class="w-full flex items-center justify-between p-3 bg-purple-50 rounded-lg text-purple-700 hover:bg-purple-100 transition-colors">
+          <span class="flex items-center">
+            <i class="fas fa-file-alt mr-3"></i>
+            Generate Reports
+          </span>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Announcements</h2>
+      <div class="space-y-4">
+        <div class="p-4 bg-yellow-50 rounded-lg">
+          <p class="font-medium text-yellow-800">Office Maintenance</p>
+          <p class="text-sm text-yellow-600 mt-1">
+            Server maintenance scheduled for tonight at 10 PM.
+          </p>
+        </div>
+        <div class="p-4 bg-blue-50 rounded-lg">
+          <p class="font-medium text-blue-800">Team Building Event</p>
+          <p class="text-sm text-blue-600 mt-1">
+            Join us this Friday for team building activities!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let clockInTime = null; // Stores the time the user clocked in
+  let timerInterval = null; // Stores the timer interval
+
+  // Function to update the current time display
+  function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('current-time').textContent = timeString;
+  }
+
+  // Function to start the hour counter
+  function startHourCounter() {
+    const elapsedTimeElement = document.getElementById('elapsed-time');
+    timerInterval = setInterval(() => {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - clockInTime) / 1000); // Calculate difference in seconds
+      const hours = Math.floor(diffInSeconds / 3600);
+      const minutes = Math.floor((diffInSeconds % 3600) / 60);
+      const seconds = diffInSeconds % 60;
+      elapsedTimeElement.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  // Function to stop the hour counter
+  function stopHourCounter() {
+    clearInterval(timerInterval); // Stop the timer
+    timerInterval = null;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Restore clock-in time from localStorage if available
+    if (localStorage.getItem('clockInTime')) {
+      clockInTime = new Date(localStorage.getItem('clockInTime'));
+      document.getElementById('clock-in-button').disabled = true;
+      document.getElementById('clock-out-button').disabled = false;
+      startHourCounter();
+    }
+
+    // Event listener for Clock In button
+    document.getElementById('clock-in-form').addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      clockInTime = new Date();
+      localStorage.setItem('clockInTime', clockInTime); // Save clock-in time in localStorage
+      document.getElementById('clock-in-button').disabled = true;
+      document.getElementById('clock-out-button').disabled = false;
+      startHourCounter();
+      e.target.submit(); // Submit the form programmatically
+    });
+
+    // Event listener for Clock Out button
+    document.getElementById('clock-out-form').addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      stopHourCounter();
+      localStorage.removeItem('clockInTime'); // Clear clock-in time from localStorage
+      document.getElementById('clock-in-button').disabled = false;
+      document.getElementById('clock-out-button').disabled = true;
+      e.target.submit(); // Submit the form programmatically
+    });
+
+    // Start the current time display
+    setInterval(updateCurrentTime, 1000);
+    updateCurrentTime();
+  });
+</script>
+{% endblock %}

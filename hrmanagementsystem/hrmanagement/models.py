@@ -1,4 +1,5 @@
 import uuid
+import string
 import os
 import random
 from django.db import models
@@ -100,13 +101,35 @@ class UserAccount(models.Model):
     ]
 
     account_id = models.OneToOneField(EmployeeInformation, on_delete=models.CASCADE, primary_key=True, related_name='user_account')
-    username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=20)
+    username = models.EmailField(max_length=100, unique=True)  # Changed to EmailField
+    password = models.CharField(max_length=50)
+    date_account_added = models.DateField(auto_now=True)
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,
         default='User'
     )
+
+    def generate_password(self):
+        """
+        Generates a password in the format: lastname.[A-Z][a-z][0-9][0-9][0-9]
+        Example: doe.Xy123
+        """
+        lastname = self.account_id.last_name.lower()
+        upper_letter = random.choice(string.ascii_uppercase)
+        lower_letter = random.choice(string.ascii_lowercase)
+        numbers = ''.join(random.choices(string.digits, k=3))
+        
+        return f"{lastname}.{upper_letter}{lower_letter}{numbers}"
+
+    def save(self, *args, **kwargs):
+        # Always use email from EmployeeInformation as username
+        self.username = self.account_id.email
+        
+        if not self.password:
+            self.password = self.generate_password()
+            
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.username
@@ -134,7 +157,7 @@ class EmployeePayroll(models.Model):
 class AttendanceRecord(models.Model):
     attendance_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='attendance_records')
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
     time_in = models.TimeField(blank=True, null=True)
     time_out = models.TimeField(blank=True, null=True)
     total_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
@@ -263,10 +286,7 @@ class PerformanceReview(models.Model):
 class Trainings(models.Model):
     training_id = models.CharField(max_length=10, primary_key=True)
     employee = models.ForeignKey(
-        EmployeeInformation,
-        on_delete=models.CASCADE,
-        related_name="trainings",
-        db_column="employee_id"
+        EmployeeInformation, on_delete=models.CASCADE, related_name="trainings", db_column="employee_id"
     )
     training_name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
