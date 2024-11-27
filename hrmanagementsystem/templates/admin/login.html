@@ -1,76 +1,62 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SRK Solutions Admin Login</title>
-    <link rel="stylesheet" href="{% static 'css/custom_admin.css' %}" />
-  </head>
-  <body class="login">
-    <div class="login-container">
-      <div class="login-logo">
-        <img src="{% static 'images/logo.png' %}" alt="SRK Solutions Logo" />
-      </div>
 
-      <h2>Welcome to the Admin Dashboard</h2>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SRK Solutions Admin Login</title>
+  <link rel="stylesheet" href="{% static 'css/custom_admin.css' %}" />
+</head>
 
-      {% if messages %} {% for message in messages %}
-      <div
-        class="form-group"
-        style="
+<body class="login">
+  <div class="login-container">
+    <div class="login-logo">
+      <img src="{% static 'images/logo.png' %}" alt="SRK Solutions Logo" />
+    </div>
+
+    <h2>Welcome to the Admin Dashboard</h2>
+
+    {% if messages %} {% for message in messages %}
+    <div class="form-group" style="
           color: #dc2626;
           background-color: #fee2e2;
           padding: 10px;
           border-radius: 4px;
           text-align: center;
           margin-bottom: 20px;
-        "
-      >
-        {{ message }}
-      </div>
-      {% endfor %} {% endif %}
-
-      <form method="POST">
-        {% csrf_token %}
-
-        <div class="form-group">
-          <label for="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            class="form-input"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="form-input"
-            required
-          />
-        </div>
-
-        <button type="submit" class="login-button">Log in</button>
-      </form>
-
-      <p>
-        <a
-          href="{% url 'login' %}"
-          style="color: #007bff; text-decoration: none; font-size: 0.9em"
-        >
-          Log in as Employee
-        </a>
-      </p>
-
-      <p style="margin-top: 2em; color: #666; font-size: 0.8em">
-        © {% now "Y" %} SRK Solutions. All rights reserved.
-      </p>
+        ">
+      {{ message }}
     </div>
-  </body>
+    {% endfor %} {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" class="form-input" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" class="form-input" required />
+      </div>
+
+      <button type="submit" class="login-button">Log in</button>
+    </form>
+
+    <p class="employee-login">
+      <a href="{% url 'login' %}" class="text-blue-500 hover:underline text-center">
+        Log in as Employee
+      </a>
+    </p>
+
+
+    <p style="margin-top: 2em; color: #666; font-size: 0.8em">
+      © {% now "Y" %} SRK Solutions. All rights reserved.
+    </p>
+  </div>
+</body>
+
 </html>

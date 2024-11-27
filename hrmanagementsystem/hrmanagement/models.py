@@ -4,6 +4,7 @@ import os
 import random
 from django.db import models
 from django.utils.html import mark_safe, format_html
+from datetime import datetime
 
 class Department(models.Model):
     department_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -162,6 +163,17 @@ class AttendanceRecord(models.Model):
     time_out = models.TimeField(blank=True, null=True)
     total_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     status = models.CharField(max_length=20, choices=[('Present', 'Present'), ('Absent', 'Absent'), ('Leave', 'Leave')], default='Absent')
+
+    def calculate_total_hours(self):
+        if self.time_in and self.time_out:
+            time_in_datetime = datetime.combine(self.date, self.time_in)
+            time_out_datetime = datetime.combine(self.date, self.time_out)
+            elapsed_time = time_out_datetime - time_in_datetime
+            total_seconds = elapsed_time.total_seconds()
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            return round(hours + minutes / 60, 2)  # Convert to decimal format
+        return 0.00
 
     def __str__(self):
         return f"Attendance {self.attendance_id} for {self.employee} on {self.date}"

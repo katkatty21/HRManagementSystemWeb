@@ -35,7 +35,7 @@ body.login {
 }
 
 .login-logo img {
-  height: 60px;
+  height: 180px;
   width: auto;
   margin: 0 auto;
 }
@@ -129,11 +129,22 @@ body.login {
   text-decoration: underline;
 }
 
-/* Employee login link */
+/* Center the "Log in as Employee" link */
 .employee-login {
-  display: block;
   text-align: center;
   margin-top: 1.5rem;
+  font-size: 0.875rem; /* Matches other text sizes for consistency */
+}
+
+.employee-login a {
+  color: #3b82f6; /* Tailwind blue-500 */
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.employee-login a:hover {
+  color: #2563eb; /* Tailwind blue-600 for hover effect */
+  text-decoration: underline;
 }
 
 /* Copyright text */
