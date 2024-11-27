@@ -253,23 +253,36 @@ class PerformanceReport(models.Model):
 
     def __str__(self):
         return f"{self.report_title} - {self.employee.first_name} {self.employee.last_name}"
-
-
+from django.db import models
+import uuid
 
 class SanctionReport(models.Model):
+    SANCTION_TYPES = [
+        ('Written Warning', 'Written Warning'),
+        ('Verbal Warning', 'Verbal Warning'),
+        ('Suspension', 'Suspension'),
+        ('Performance Improvement Plan (PIP)', 'Performance Improvement Plan (PIP)'),
+        ('Demotion', 'Demotion'),
+        ('Termination', 'Termination'),
+        ('Probation', 'Probation'),
+        ('Loss of Privileges', 'Loss of Privileges'),
+        ('Training or Re-Training', 'Training or Re-Training'),
+        ('Demotion in Pay or Benefits', 'Demotion in Pay or Benefits'),
+        ('Suspension of Certain Rights or Benefits', 'Suspension of Certain Rights or Benefits'),
+    ]
+
     sanction_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='sanction_reports')
     sanction_reason = models.CharField(max_length=255)
     sanction_details = models.TextField()
-    sanction_type = models.CharField(max_length=255)  
-    sanction_date = models.DateField()  
-    status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Resolved', 'Resolved')])  
+    sanction_type = models.CharField(max_length=255, choices=SANCTION_TYPES)  # Add choices here
+    sanction_date = models.DateField()
+    status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Resolved', 'Resolved')])
     date_created = models.DateField(auto_now_add=True)
+    sanction_report_file = models.FileField(upload_to='sanction_reports/', null=True, blank=True)  # Field to upload file
 
     def __str__(self):
         return f"Sanction for {self.employee.first_name} {self.employee.last_name}: {self.sanction_reason}"
-
-
 
 class PerformanceReview(models.Model):
     review_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

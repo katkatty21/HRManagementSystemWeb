@@ -7,6 +7,7 @@ urlpatterns = [
     path('clock-in/', views.clock_in, name='clock_in'),
     path('attendance-record/', views.attendance_record, name='attendance_record'), 
     path('admin/login/', views.custom_admin_login, name='admin_login'),
-    path('leave_request/', views.leave_request_page, name='leave_request'),
+    path('leave_request/', views.leave_request_page, name='leave_request_page'),
+    path('performance_feedback/', views.performance_feedback, name='performance_feedback'),
 
 ]

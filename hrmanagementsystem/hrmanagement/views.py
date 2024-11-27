@@ -6,12 +6,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from .models import UserAccount, EmployeeInformation, AttendanceRecord, LeaveType, LeaveRequest
 from django.views.decorators.csrf import csrf_protect
-
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import LeaveRequest, LeaveType
 from .forms import LeaveRequestForm
-
+from django.contrib import messages
+from datetime import datetime
+from django.db.models import Count, Sum
 
 # Set the timezone to Asia/Manila
 PHILIPPINES_TZ = pytz_timezone('Asia/Manila')
@@ -125,6 +124,39 @@ def clock_out(request):
 
 
 
+def calculate_total_hours(time_in, time_out):
+    """Calculates the total hours worked based on time_in and time_out"""
+    if time_in and time_out:
+        time_in = datetime.combine(datetime.today(), time_in)
+        time_out = datetime.combine(datetime.today(), time_out)
+        total_time = time_out - time_in
+        return total_time.seconds / 3600  # Convert seconds to hours
+    return 0
+
+
+from datetime import datetime
+from django.shortcuts import render, redirect
+from .models import AttendanceRecord, EmployeeInformation
+
+def calculate_working_and_overtime_hours(time_in, time_out, status):
+    """Calculates working hours and overtime hours, skipping if status is 'Leave'."""
+    if status == 'Leave':
+        return 0, 0  # No working or overtime hours for leave days
+    
+    if time_in and time_out:
+        time_in = datetime.combine(datetime.today(), time_in)
+        time_out = datetime.combine(datetime.today(), time_out)
+        total_time = time_out - time_in
+        total_hours = total_time.seconds / 3600  # Convert seconds to hours
+        
+        # 8 hours workday threshold
+        working_hours = min(total_hours, 8)  # Cap working hours at 8
+        overtime_hours = max(0, total_hours - 8)  # Overtime is any time beyond 8 hours
+
+        return round(working_hours, 3), round(overtime_hours, 3)
+    
+    return 0, 0
+
 def attendance_record(request):
     if 'user_id' not in request.session:
         return redirect('login')
@@ -136,10 +168,16 @@ def attendance_record(request):
         # Retrieve attendance records for the employee
         attendance_records = AttendanceRecord.objects.filter(employee=employee).order_by('-date')
 
+        # Calculate working hours and overtime for each record
+        for record in attendance_records:
+            record.working_hours, record.overtime_hours = calculate_working_and_overtime_hours(record.time_in, record.time_out, record.status)
+            record.save()
+
         # Calculate the attendance statistics
-        total_attendance = attendance_records.count()
+        
         present_days = attendance_records.filter(status='Present').count()
         absent_days = attendance_records.filter(status='Absent').count()
+        leave_days = attendance_records.filter(status='Leave').count()
 
         # Retrieve the job directly (assuming it's stored as a string or reference in EmployeeInformation)
         job = employee.job  # If job is directly the job name or ID
@@ -149,48 +187,130 @@ def attendance_record(request):
             'attendance_records': attendance_records,
             'user_role': request.session.get('user_role', 'User'),
             'user_name': request.session.get('user_name', ''),
-            'total_attendance': total_attendance,
+           
             'present_days': present_days,
             'absent_days': absent_days,
+            'leave_days': leave_days,  # Add leave days
             'job': job,  # Pass the job to the context
         }
 
         return render(request, 'pages/attendance_record.html', context)
+    
     except EmployeeInformation.DoesNotExist:
         return redirect('login')
-    
+
+
+from datetime import datetime
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import LeaveType, LeaveRequest
 from .forms import LeaveRequestForm
-from .models import LeaveType, LeaveRequest, UserAccount
-from django.views.decorators.csrf import csrf_protect
 
-@csrf_protect
-@login_required
 def leave_request_page(request):
-    leave_types = LeaveType.objects.all()  # Get all leave types
+    # Check if the user has an associated employee information
+    if 'user_id' not in request.session:
+        return redirect('login')
+    
     try:
-        # Find UserAccount for the logged-in user
-        user_account = UserAccount.objects.get(username=request.user.email)
-        # Get the related EmployeeInformation object
-        employee_info = user_account.account_id
-        # Fetch leave requests for that employee
-        leave_requests = LeaveRequest.objects.filter(employee=employee_info)
-    except UserAccount.DoesNotExist:
-        leave_requests = []  # If no UserAccount exists for this user, return empty list
+        # Retrieve employee information
+        employee = EmployeeInformation.objects.get(employee_id=request.session['user_id'])
+    except EmployeeInformation.DoesNotExist:
+        messages.error(request, "You don't have employee information linked to your account.")
+        return redirect('home')  # Redirect to a different page or an error page
 
-    if request.method == 'POST':
-        form = LeaveRequestForm(request.POST)
-        if form.is_valid():
-            leave_request = form.save(commit=False)
-            leave_request.employee = employee_info  # Set the employee info for the leave request
-            leave_request.save()
-            return redirect('leave_request_page')
-    else:
-        form = LeaveRequestForm()
+    leave_types = LeaveType.objects.all()  # Fetch all leave types
+    leave_requests = LeaveRequest.objects.filter(employee=employee)  # Fetch user's leave requests
 
-    return render(request, 'pages/leave_request.html', {
-        'form': form,
-        'leave_requests': leave_requests,
+    # Handle form submission
+    if request.method == "POST":
+        leave_type_id = request.POST.get('leave_type')
+        start_date_str = request.POST.get('start_date')
+        end_date_str = request.POST.get('end_date')
+        reason = request.POST.get('reason')
+        description = request.POST.get('description')
+
+        try:
+            leave_type = LeaveType.objects.get(leave_type_id=leave_type_id)
+
+            # Convert start_date and end_date from string to datetime.date
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+            # Calculate duration based on the dates
+            duration = (end_date - start_date).days
+
+            # Create the leave request
+            LeaveRequest.objects.create(
+                employee=employee,
+                leave_type=leave_type,
+                start_date=start_date,
+                end_date=end_date,
+                duration=duration,
+                reason=reason,
+                description=description,
+                status='Pending'  # Default status
+            )
+            messages.success(request, "Leave request submitted successfully!")
+        except LeaveType.DoesNotExist:
+            messages.error(request, "Invalid leave type selected.")
+        except Exception as e:
+            messages.error(request, f"Error occurred: {str(e)}")
+        return redirect('leave_request_page')
+
+    total_count = leave_requests.count()
+    approved_count = leave_requests.filter(status='Approved').count()
+    pending_count = leave_requests.filter(status='Pending').count()
+
+    context = {
         'leave_types': leave_types,
+        'leave_requests': leave_requests,
+        'total_count': total_count,
+        'approved_count': approved_count,
+        'pending_count': pending_count,
+    }
+
+    return render(request, 'pages/leave_request.html', context)
+
+from django.shortcuts import render
+from .models import SanctionReport
+from django.contrib import messages
+from django.shortcuts import render
+from .models import SanctionReport
+# Include the necessary form or model imports if feedback is handled
+
+def performance_feedback(request):
+    # Fetch all sanction reports from the database, ordered by sanction_date
+    sanction_reports = SanctionReport.objects.all().order_by('-sanction_date')
+
+    # Placeholder for feedback data, replace with actual logic if necessary
+    feedback_data = []  # Example, you can replace this with actual data fetching logic
+    
+    # Handle POST request for feedback submission
+    if request.method == 'POST':
+        # Example logic: save feedback related to a specific sanction report
+        # Assuming feedback is related to a specific report (you would need to create a form or model for feedback)
+        
+        # Fetch the SanctionReport object by the report ID sent in the form
+        report_id = request.POST.get('report_id')  # You should send this in the form
+        feedback_text = request.POST.get('feedback')  # Feedback content
+
+        if report_id and feedback_text:
+            try:
+                # Assuming you have a Feedback model to save feedback for sanction reports
+                sanction_report = SanctionReport.objects.get(sanction_id=report_id)
+                
+                # Create and save feedback object (you'll need to have a feedback model)
+                # Example:
+                # feedback = Feedback(sanction_report=sanction_report, feedback=feedback_text)
+                # feedback.save()
+                
+                # For now, we show a success message
+                messages.success(request, 'Feedback submitted successfully!')
+
+            except SanctionReport.DoesNotExist:
+                messages.error(request, 'Sanction report not found.')
+        
+    return render(request, 'pages/performance_feedback.html', {
+        'sanction_reports': sanction_reports,
+        'feedback_data': feedback_data,
     })

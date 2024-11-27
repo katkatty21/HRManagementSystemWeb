@@ -193,14 +193,15 @@ class PerformanceReviewAdmin(admin.ModelAdmin):
     search_fields = ('employee__first_name', 'employee__last_name', 'review_comments', 'reviewer__first_name', 'reviewer__last_name')
     list_filter = ('review_date', 'performance_score')
     ordering = ('review_date',)
-
+    
 @admin.register(SanctionReport)
 class SanctionReportAdmin(admin.ModelAdmin):
     list_display = ('sanction_id', 'employee', 'sanction_type', 'sanction_date', 'status')
     list_display_links = ('sanction_id', 'employee')
     search_fields = ('employee__first_name', 'employee__last_name', 'sanction_type')
-    list_filter = ('status', 'sanction_date')
+    list_filter = ('status', 'sanction_date', 'sanction_type')  # Add sanction_type to the filter
     ordering = ('sanction_date',)
+
 
 @admin.register(Trainings)
 class TrainingAdmin(admin.ModelAdmin):

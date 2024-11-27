@@ -1,0 +1,185 @@
+
+{% extends 'pages/base.html' %}
+
+{% block title %}
+Performance Feedback
+{% endblock %}
+
+{% block content %}
+
+
+<!-- Main Content Section -->
+<div class="container mx-auto mt-12 px-6 lg:px-16">
+
+    <!-- Feedback Navigation Section -->
+    <div class="bg-white rounded-lg shadow-xl p-8 mb-12">
+        <h3 class="text-3xl font-semibold text-blue-600 mb-6">Performance Feedback Options</h3>
+        <p class="text-lg text-gray-700 mb-8">Choose the appropriate feedback category and submit your review</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Submit Peer Feedback -->
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-lg shadow-lg hover:scale-105 transition-all duration-300">
+                <h4 class="text-xl font-semibold mb-4">Submit Peer Feedback</h4>
+                <p class="text-sm">Provide constructive feedback for your colleagues, helping them grow professionally.</p>
+                <a href="#" class="mt-4 text-blue-200 hover:text-blue-100 text-lg font-semibold transition-all duration-300">Give Peer Feedback</a>
+            </div>
+
+            <!-- Self-Assessment Review -->
+            <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-lg shadow-lg hover:scale-105 transition-all duration-300">
+                <h4 class="text-xl font-semibold mb-4">Self-Assessment Review</h4>
+                <p class="text-sm">Evaluate your own performance, reflect on your achievements, and set goals for personal development.</p>
+                <a href="#" class="mt-4 text-blue-200 hover:text-blue-100 text-lg font-semibold transition-all duration-300">Complete Self-Assessment</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback from Supervisor Section -->
+    <div class="bg-white rounded-lg shadow-xl p-8 mb-12">
+        <h3 class="text-3xl font-semibold text-blue-600 mb-6">Feedback from Supervisor</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border-separate border-spacing-2">
+                <thead class="bg-blue-600 text-white text-sm">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-medium">Name</th>
+                        <th class="px-6 py-4 text-left font-medium">Review Date</th>
+                        <th class="px-6 py-4 text-left font-medium">Reviewer</th>
+                        <th class="px-6 py-4 text-left font-medium">Performance Score</th>
+                        <th class="px-6 py-4 text-left font-medium">Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm">John Doe</td>
+                        <td class="px-6 py-4 text-sm">12/11/2024</td>
+                        <td class="px-6 py-4 text-sm">Supervisor</td>
+                        <td class="px-6 py-4 text-sm">Excellent</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">Great team player and always meets deadlines.</td>
+                    </tr>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm">Jane Smith</td>
+                        <td class="px-6 py-4 text-sm">10/23/2024</td>
+                        <td class="px-6 py-4 text-sm">Supervisor</td>
+                        <td class="px-6 py-4 text-sm">Good</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">Needs improvement in communication skills.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+ <!-- Sanction Reports Section -->
+<div class="bg-white rounded-lg shadow-xl p-8 mb-12">
+    <h3 class="text-3xl font-semibold text-blue-600 mb-6">Sanction Reports</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-auto border-separate border-spacing-2">
+            <thead class="bg-red-600 text-white text-sm">
+                <tr>
+                    <th class="px-6 py-4 text-left font-medium">Name</th>
+                    <th class="px-6 py-4 text-left font-medium">Sanction Date</th>
+                    <th class="px-6 py-4 text-left font-medium">Sanction Type</th>
+                    <th class="px-6 py-4 text-left font-medium">Status</th>
+                    <th class="px-6 py-4 text-left font-medium">Comments</th>
+                    <th class="px-6 py-4 text-left font-medium">Sanction Report File</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in sanction_reports %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm">
+                            {{ report.employee.first_name }} {{ report.employee.last_name }}
+                        </td>
+                        <td class="px-6 py-4 text-sm">{{ report.sanction_date }}</td>
+                        <td class="px-6 py-4 text-sm">{{ report.sanction_type }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            {% if report.status == 'Pending' %}
+                                <span class="text-xs font-semibold bg-yellow-500 text-white px-2 py-1 rounded-full">
+                                    {{ report.status }}
+                                </span>
+                            {% elif report.status == 'Resolved' %}
+                                <span class="text-xs font-semibold bg-green-500 text-white px-2 py-1 rounded-full">
+                                    {{ report.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ report.sanction_details }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            {% if report.sanction_report_file %}
+                                <a href="{{ report.sanction_report_file.url }}" class="text-blue-500" target="_blank">Download</a>
+                            {% else %}
+                                <span class="text-gray-500">No file</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-500 py-4">No sanction reports available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+    <!-- Submit Your Feedback Form Section -->
+    <div class="bg-white rounded-lg shadow-xl p-8 mb-12">
+        <h3 class="text-3xl font-semibold text-blue-600 mb-6">Submit Your Feedback</h3>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Feedback Textarea -->
+            <div class="mb-4">
+                <label for="feedback" class="block text-lg font-medium text-gray-800">Your Feedback</label>
+                <textarea id="feedback" name="feedback" rows="4" class="w-full border border-gray-300 rounded-lg p-4 transition-all focus:ring-2 focus:ring-blue-500" required placeholder="Write your feedback here..."></textarea>
+            </div>
+
+            <!-- Rating Dropdown -->
+            <div class="mb-4">
+                <label for="rating" class="block text-lg font-medium text-gray-800">Rating</label>
+                <select id="rating" name="rating" class="w-full border border-gray-300 rounded-lg p-4 transition-all focus:ring-2 focus:ring-blue-500" required>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Average">Average</option>
+                    <option value="Poor">Poor</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300">Submit Feedback</button>
+        </form>
+    </div>
+
+    <!-- Real-time Feedback Status -->
+    <div id="status" class="hidden bg-teal-200 text-teal-800 p-4 rounded-lg shadow-lg mb-8">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-3 text-2xl"></i>
+            <p>Your feedback has been submitted successfully!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Pop-up Reminder Modal -->
+<div id="reminder-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-xl w
+
+-1/3">
+        <h4 class="text-2xl font-semibold text-blue-600 mb-4">Performance Feedback Reminder</h4>
+        <p class="text-lg text-gray-700 mb-4">Just a quick reminder to submit your performance feedback. The deadline is approaching!</p>
+        <button id="close-modal" class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300">Got it!</button>
+    </div>
+</div>
+
+<script>
+    // Display the pop-up when the page loads
+    window.onload = function() {
+        document.getElementById('reminder-modal').classList.remove('hidden');
+    }
+
+    // Close the pop-up when the button is clicked
+    document.getElementById('close-modal').onclick = function() {
+        document.getElementById('reminder-modal').classList.add('hidden');
+    }
+</script>
+{% endblock %}

@@ -20,16 +20,13 @@ Attendance Dashboard
         <!-- Profile Information -->
         <div class="text-center mb-6">
             <h2 class="text-3xl font-semibold text-gray-800">{{ request.session.user_name|default:"User" }}</h2>
-            <p class="text-xl text-gray-600">{{ job|default:"Job Title" }}
+            <p class="text-xl text-gray-600">{{ job|default:"Job Title" }}</p>
             <p class="text-sm text-gray-500 mt-1">Employee ID: #{{ request.session.user_id|default:"12345" }}</p>
         </div>
 
         <!-- Attendance Statistics -->
         <div class="grid grid-cols-3 gap-6 text-center">
-            <div class="bg-blue-50 p-4 rounded-lg shadow-md">
-                <h4 class="text-lg font-semibold text-blue-600">Total Attendance</h4>
-                <p class="text-2xl font-bold text-gray-800">{{ total_attendance|default:0 }}</p>
-            </div>
+            
             <div class="bg-green-50 p-4 rounded-lg shadow-md">
                 <h4 class="text-lg font-semibold text-green-600">Present Days</h4>
                 <p class="text-2xl font-bold text-gray-800">{{ present_days|default:0 }}</p>
@@ -37,6 +34,10 @@ Attendance Dashboard
             <div class="bg-red-50 p-4 rounded-lg shadow-md">
                 <h4 class="text-lg font-semibold text-red-600">Absent Days</h4>
                 <p class="text-2xl font-bold text-gray-800">{{ absent_days|default:0 }}</p>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-lg shadow-md">
+                <h4 class="text-lg font-semibold text-yellow-600">Leave Days</h4>
+                <p class="text-2xl font-bold text-gray-800">{{ leave_days|default:0 }}</p>
             </div>
         </div>
     </div>
@@ -52,6 +53,8 @@ Attendance Dashboard
                         <th class="px-6 py-4 text-left font-medium">Status</th>
                         <th class="px-6 py-4 text-left font-medium">Time In</th>
                         <th class="px-6 py-4 text-left font-medium">Time Out</th>
+                        <th class="px-6 py-4 text-left font-medium">Working Hours</th>
+                        <th class="px-6 py-4 text-left font-medium">Overtime Hours</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,14 +67,15 @@ Attendance Dashboard
                                     Present
                                 {% elif record.status == 'Absent' %}
                                     Absent
-                                {% else %}
-                                    Pending
+                                {% elif record.status == 'Leave' %}
+                                    Leave
                                 {% endif %}
                             </span>
-                            
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_in }}</td>
                         <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_out }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.working_hours }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.overtime_hours }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
