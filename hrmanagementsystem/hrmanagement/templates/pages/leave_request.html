@@ -38,7 +38,7 @@ Leave Request Dashboard
                     <th class="px-6 py-4 text-left font-medium">Reason</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="leave-requests-tbody">
                 {% for request in leave_requests %}
                 <tr class="border-b hover:bg-gray-50 transition-all">
                     <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ request.start_date }}</td>
@@ -56,7 +56,34 @@ Leave Request Dashboard
             </tbody>
         </table>
     </div>
+
+    <!-- See All Button -->
+    <div class="mt-6 text-center">
+        <button id="see-all-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition-all">
+            See All
+        </button>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('#leave-requests-tbody tr');
+        const seeAllBtn = document.getElementById('see-all-btn');
+
+        // Initially hide rows after the fifth
+        rows.forEach((row, index) => {
+            if (index >= 5) {
+                row.style.display = 'none';
+            }
+        });
+
+        // Add click event to "See All" button
+        seeAllBtn.addEventListener('click', () => {
+            rows.forEach(row => (row.style.display = 'table-row')); // Show all rows
+            seeAllBtn.style.display = 'none'; // Hide the button
+        });
+    });
+</script>
 
 <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
     <h3 class="text-3xl font-semibold text-blue-600 mb-6">Request for Leave</h3>
@@ -98,3 +125,4 @@ Leave Request Dashboard
     </form>
 </div>
 {% endblock %}
+

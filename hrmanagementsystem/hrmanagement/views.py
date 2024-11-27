@@ -272,26 +272,23 @@ def leave_request_page(request):
     return render(request, 'pages/leave_request.html', context)
 
 from django.shortcuts import render
-from .models import SanctionReport
 from django.contrib import messages
-from django.shortcuts import render
-from .models import SanctionReport
-# Include the necessary form or model imports if feedback is handled
+from .models import SanctionReport, PerformanceReview
 
 def performance_feedback(request):
     # Fetch all sanction reports from the database, ordered by sanction_date
     sanction_reports = SanctionReport.objects.all().order_by('-sanction_date')
 
-    # Placeholder for feedback data, replace with actual logic if necessary
-    feedback_data = []  # Example, you can replace this with actual data fetching logic
-    
-    # Handle POST request for feedback submission
+    # Fetch all performance reviews from the database, ordered by review_date
+    performance_reviews = PerformanceReview.objects.all().order_by('-review_date')
+
+    # Placeholder for feedback data related to sanction reports
+    feedback_data = []  # Replace with actual logic if feedback is implemented
+
+    # Handle POST request for feedback submission (for sanction reports)
     if request.method == 'POST':
-        # Example logic: save feedback related to a specific sanction report
-        # Assuming feedback is related to a specific report (you would need to create a form or model for feedback)
-        
         # Fetch the SanctionReport object by the report ID sent in the form
-        report_id = request.POST.get('report_id')  # You should send this in the form
+        report_id = request.POST.get('report_id')  # Should be sent in the form
         feedback_text = request.POST.get('feedback')  # Feedback content
 
         if report_id and feedback_text:
@@ -303,14 +300,15 @@ def performance_feedback(request):
                 # Example:
                 # feedback = Feedback(sanction_report=sanction_report, feedback=feedback_text)
                 # feedback.save()
-                
+
                 # For now, we show a success message
                 messages.success(request, 'Feedback submitted successfully!')
 
             except SanctionReport.DoesNotExist:
                 messages.error(request, 'Sanction report not found.')
-        
+
     return render(request, 'pages/performance_feedback.html', {
         'sanction_reports': sanction_reports,
+        'performance_reviews': performance_reviews,
         'feedback_data': feedback_data,
     })
