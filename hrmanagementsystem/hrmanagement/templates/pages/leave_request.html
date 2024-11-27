@@ -1,0 +1,114 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}
+Leave Request Dashboard
+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header Section -->
+<section class="bg-gradient-to-r from-blue-600 to-teal-600 text-white text-center py-12 shadow-lg rounded-b-3xl">
+    <h1 class="text-4xl font-extrabold tracking-wide">Leave Management</h1>
+    <p class="mt-3 text-xl font-medium">Manage your leave requests and view summaries</p>
+</section>
+
+<!-- Main Content Section -->
+<div class="container mx-auto mt-12 px-6 lg:px-16">
+
+    <!-- Leave Request Stats (Card-Style) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
+            <h3 class="text-2xl font-semibold text-gray-800">Total Leave Requests</h3>
+            <p class="text-4xl font-bold text-gray-900">0</p>
+        </div>
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
+            <h3 class="text-2xl font-semibold text-gray-800">Approved Leave Requests</h3>
+            <p class="text-4xl font-bold text-green-600">1</p>
+        </div>
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
+            <h3 class="text-2xl font-semibold text-gray-800">Pending Leave Requests</h3>
+            <p class="text-4xl font-bold text-yellow-600">2</p>
+        </div>
+    </div>
+
+    <!-- Leave Request Summary Table -->
+    <div class="bg-white rounded-xl shadow-2xl p-8 mb-12">
+        <h3 class="text-3xl font-semibold text-blue-600 mb-6">Leave Requests Summary</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border-separate border-spacing-2">
+                <thead class="bg-indigo-600 text-white text-sm">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-medium">Date</th>
+                        <th class="px-6 py-4 text-left font-medium">Leave Type</th>
+                        <th class="px-6 py-4 text-left font-medium">Status</th>
+                        <th class="px-6 py-4 text-left font-medium">Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in leave_requests %}
+                    <tr class="border-b hover:bg-gray-50 transition-all">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-800">0</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ request.leave_type }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="text-black px-4 py-2 rounded-full text-xs font-semibold">
+                                {% if request.status == 'Approved' %}
+                                    Approved
+                                {% elif request.status == 'Pending' %}
+                                    Pending
+                                {% else %}
+                                    Rejected
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ request.reason }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Leave Request Form -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+        <h3 class="text-3xl font-semibold text-blue-600 mb-6">Request for Leave</h3>
+        <form method="post" action="{% url 'leave_request' %}">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Leave Type -->
+                <div>
+                    <label for="leave_type" class="block text-sm font-medium text-gray-700">Leave Type</label>
+                    <select id="leave_type" name="leave_type" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="Sick Leave">Sick Leave</option>
+                        <option value="Vacation Leave">Vacation Leave</option>
+                        <option value="Emergency Leave">Emergency Leave</option>
+                    </select>
+                </div>
+                
+                <!-- Start Date -->
+                <div>
+                    <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- End Date -->
+                <div>
+                    <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+                    <input type="date" id="end_date" name="end_date" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- Reason -->
+                <div class="col-span-2">
+                    <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Leave</label>
+                    <textarea id="reason" name="reason" rows="4" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter the reason for your leave request"></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-6 text-center">
+                <button type="submit" class="px-6 py-3 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all">Submit Leave Request</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,114 +1,82 @@
 {% extends 'pages/base.html' %}
 
 {% block title %}
-Attendance Record
+Attendance Dashboard
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="text-center py-16 bg-blue-600 text-white rounded-b-3xl shadow-lg">
-    <h1 class="text-5xl font-extrabold">Attendance Record</h1>
-    <p class="mt-4 text-lg font-semibold">Manage your attendance with ease</p>
+<!-- Dashboard Header Section -->
+<section class="bg-gradient-to-r from-blue-600 to-teal-600 text-white text-center py-12 shadow-lg rounded-b-3xl">
+    <h1 class="text-4xl font-extrabold tracking-wide">Attendance Records</h1>
+    <p class="mt-3 text-xl font-medium">Manage your detailed attendance summary</p>
 </section>
 
 <!-- Main Content Section -->
-<div class="container mx-auto mt-8 px-4 lg:px-12">
+<div class="container mx-auto mt-12 px-6 lg:px-16">
 
-    <!-- Employee Information Section -->
-    <div class="bg-white p-8 rounded-lg shadow-lg mb-6 hover:shadow-xl transition-all">
-        <h2 class="text-2xl font-semibold text-blue-600 mb-4">Employee Information</h2>
+    <!-- Employee Information Section (Profile Card) -->
+    <div class="bg-white rounded-lg shadow-xl p-8 mb-12 hover:shadow-2xl transition-all">
+        
+        <!-- Profile Information -->
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-semibold text-gray-800">{{ request.session.user_name|default:"User" }}</h2>
+            <p class="text-xl text-gray-600">{{ job|default:"Job Title" }}
+            <p class="text-sm text-gray-500 mt-1">Employee ID: #{{ request.session.user_id|default:"12345" }}</p>
+        </div>
 
-        <!-- Employee Info Table -->
+        <!-- Attendance Statistics -->
+        <div class="grid grid-cols-3 gap-6 text-center">
+            <div class="bg-blue-50 p-4 rounded-lg shadow-md">
+                <h4 class="text-lg font-semibold text-blue-600">Total Attendance</h4>
+                <p class="text-2xl font-bold text-gray-800">{{ total_attendance|default:0 }}</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg shadow-md">
+                <h4 class="text-lg font-semibold text-green-600">Present Days</h4>
+                <p class="text-2xl font-bold text-gray-800">{{ present_days|default:0 }}</p>
+            </div>
+            <div class="bg-red-50 p-4 rounded-lg shadow-md">
+                <h4 class="text-lg font-semibold text-red-600">Absent Days</h4>
+                <p class="text-2xl font-bold text-gray-800">{{ absent_days|default:0 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Records Section -->
+    <div class="bg-white rounded-lg shadow-2xl p-8 mb-12 hover:shadow-3xl transition-all">
+        <h3 class="text-3xl font-semibold text-blue-600 mb-6">Attendance Summary</h3>
         <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-                <thead class="bg-blue-500 text-white">
+            <table class="min-w-full table-auto border-separate border-spacing-2">
+                <thead class="bg-blue-600 text-white text-sm">
                     <tr>
-                        <th class="px-6 py-3 text-left">Field</th>
-                        <th class="px-6 py-3 text-left">Details</th>
+                        <th class="px-6 py-4 text-left font-medium">Date</th>
+                        <th class="px-6 py-4 text-left font-medium">Status</th>
+                        <th class="px-6 py-4 text-left font-medium">Time In</th>
+                        <th class="px-6 py-4 text-left font-medium">Time Out</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b hover:bg-blue-50 transition-all">
-                        <td class="px-6 py-4 text-lg text-gray-700">Name:</td>
-                        <td class="px-6 py-4 text-xl font-semibold text-gray-900">John Doe</td>
+                    {% for record in attendance_records %}
+                    <tr class="border-b hover:bg-gray-50 transition-all">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ record.date }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="text-black px-4 py-2 rounded-full text-xs font-semibold">
+                                {% if record.status == 'Present' %}
+                                    Present
+                                {% elif record.status == 'Absent' %}
+                                    Absent
+                                {% else %}
+                                    Pending
+                                {% endif %}
+                            </span>
+                            
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_in }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_out }}</td>
                     </tr>
-                    <tr class="border-b hover:bg-blue-50 transition-all">
-                        <td class="px-6 py-4 text-lg text-gray-700">Employee ID:</td>
-                        <td class="px-6 py-4 text-xl font-semibold text-gray-900">#EMP12345</td>
-                    </tr>
-                    <tr class="border-b hover:bg-blue-50 transition-all">
-                        <td class="px-6 py-4 text-lg text-gray-700">Department:</td>
-                        <td class="px-6 py-4 text-xl font-semibold text-gray-900">HR</td>
-                    </tr>
-                    <tr class="border-b hover:bg-blue-50 transition-all">
-                        <td class="px-6 py-4 text-lg text-gray-700">Position:</td>
-                        <td class="px-6 py-4 text-xl font-semibold text-gray-900">Manager</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
-
-        <!-- Add Attendance Button -->
-        <div class="mt-6 text-center">
-            <a href="/mark-attendance/"
-                class="bg-blue-600 text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-blue-700 transition duration-300 inline-flex items-center">
-                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Add Attendance
-            </a>
-        </div>
-    </div>
-
-    <!-- Attendance Table -->
-    <div class="overflow-x-auto bg-white rounded-lg shadow-lg hover:shadow-xl transition-all mb-6">
-        <table class="min-w-full">
-            <thead>
-                <tr class="bg-blue-500 text-white">
-                    <th class="px-6 py-3 text-left">Date</th>
-                    <th class="px-6 py-3 text-left">Status</th>
-                    <th class="px-6 py-3 text-left">Time In</th>
-                    <th class="px-6 py-3 text-left">Time Out</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Example of one day's attendance -->
-                <tr class="border-b hover:bg-gray-50 transition-all">
-                    <td class="px-6 py-4">2024-11-18</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-green-500 text-white px-2 py-1 rounded-full">Present</span>
-                    </td>
-                    <td class="px-6 py-4">09:00 AM</td>
-                    <td class="px-6 py-4">06:00 PM</td>
-                </tr>
-                <!-- Example of a late day -->
-                <tr class="border-b hover:bg-gray-50 transition-all">
-                    <td class="px-6 py-4">2024-11-17</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-yellow-500 text-white px-2 py-1 rounded-full">Late</span>
-                    </td>
-                    <td class="px-6 py-4">09:15 AM</td>
-                    <td class="px-6 py-4">06:00 PM</td>
-                </tr>
-                <!-- Example of an absence -->
-                <tr class="border-b hover:bg-gray-50 transition-all">
-                    <td class="px-6 py-4">2024-11-16</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-red-500 text-white px-2 py-1 rounded-full">Absent</span>
-                    </td>
-                    <td class="px-6 py-4">N/A</td>
-                    <td class="px-6 py-4">N/A</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Attendance Notes Section -->
-    <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all mt-6">
-        <h2 class="text-xl font-semibold mb-4">Your Attendance Notes</h2>
-        <p class="text-lg">If you need to leave a comment or have any notes regarding your attendance, feel free to
-            contact HR directly. email: hr@srksolutions.com</p>
     </div>
 
 </div>
