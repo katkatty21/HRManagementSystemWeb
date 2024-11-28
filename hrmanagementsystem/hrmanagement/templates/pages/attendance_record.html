@@ -41,62 +41,80 @@ Attendance Dashboard
             </div>
         </div>
     </div>
-<!-- Attendance Records Section -->
-<div class="bg-white rounded-lg shadow-2xl p-8 mb-12 hover:shadow-3xl transition-all">
-    <h3 class="text-3xl font-semibold text-blue-600 mb-6">Attendance Summary</h3>
-    <div class="overflow-x-auto">
-        <table class="min-w-full table-auto border-separate border-spacing-2">
-            <thead class="bg-blue-600 text-white text-sm">
-                <tr>
-                    <th class="px-6 py-4 text-left font-medium">Date</th>
-                    <th class="px-6 py-4 text-left font-medium">Status</th>
-                    <th class="px-6 py-4 text-left font-medium">Time In</th>
-                    <th class="px-6 py-4 text-left font-medium">Time Out</th>
-                    <th class="px-6 py-4 text-left font-medium">Working Hours</th>
-                    <th class="px-6 py-4 text-left font-medium">Overtime Hours</th>
-                </tr>
-            </thead>
-            <tbody id="attendance-tbody">
-                {% for record in attendance_records %}
-                <tr class="border-b hover:bg-gray-50 transition-all">
-                    <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ record.date }}</td>
-                    <td class="px-6 py-4 text-sm">
-                        <span class="text-black px-4 py-2 rounded-full text-xs font-semibold">
-                            {% if record.status == 'Present' %}
-                                Present
-                            {% elif record.status == 'Absent' %}
-                                Absent
-                            {% elif record.status == 'Leave' %}
-                                Leave
-                            {% endif %}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_in }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_out }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ record.working_hours }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ record.overtime_hours }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- Attendance Records Section -->
+    <div class="bg-white rounded-lg shadow-2xl p-8 mb-12 hover:shadow-3xl transition-all">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-3xl font-semibold text-blue-600">Attendance Summary</h3>
+            <!-- Search Dropdown -->
+            <div class="relative inline-block w-48">
+                <select id="attendance-filter" class="block w-full bg-gray-100 text-gray-800 border border-gray-300 rounded-lg shadow-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 appearance-none transition duration-150 ease-in-out">
+                    <option value="all">All</option>
+                    <option value="Present">Present</option>
+                    <option value="Absent">Absent</option>
+                    <option value="Leave">Leave</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border-separate border-spacing-2">
+                <thead class="bg-blue-600 text-white text-sm">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-medium">Date</th>
+                        <th class="px-6 py-4 text-left font-medium">Status</th>
+                        <th class="px-6 py-4 text-left font-medium">Time In</th>
+                        <th class="px-6 py-4 text-left font-medium">Time Out</th>
+                        <th class="px-6 py-4 text-left font-medium">Working Hours</th>
+                        <th class="px-6 py-4 text-left font-medium">Overtime Hours</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-tbody">
+                    {% for record in attendance_records %}
+                    <tr class="border-b hover:bg-gray-50 transition-all">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ record.date }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="text-black px-4 py-2 rounded-full text-xs font-semibold">
+                                {% if record.status == 'Present' %}
+                                    Present
+                                {% elif record.status == 'Absent' %}
+                                    Absent
+                                {% elif record.status == 'Leave' %}
+                                    Leave
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_in }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.time_out }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.working_hours }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">{{ record.overtime_hours }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- See All Button -->
+        <div class="mt-6 text-center">
+            <button id="see-all-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition-all">
+                See All
+            </button>
+        </div>
     </div>
 
-    <!-- See All Button -->
-    <div class="mt-6 text-center">
-        <button id="see-all-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition-all">
-            See All
-        </button>
-    </div>
 </div>
-
-
-</div>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const rows = document.querySelectorAll('#attendance-tbody tr');
         const seeAllBtn = document.getElementById('see-all-btn');
+        const filterDropdown = document.getElementById('attendance-filter');
 
         // Initially hide rows after the fifth
         rows.forEach((row, index) => {
@@ -110,9 +128,20 @@ Attendance Dashboard
             rows.forEach(row => (row.style.display = 'table-row')); // Show all rows
             seeAllBtn.style.display = 'none'; // Hide the button
         });
+
+        // Filter attendance records based on dropdown selection
+        filterDropdown.addEventListener('change', () => {
+            const filterValue = filterDropdown.value;
+            rows.forEach(row => {
+                const status = row.cells[1].textContent.trim();
+                if (filterValue === 'all' || status === filterValue) {
+                    row.style.display = 'table-row'; // Show matching rows
+                } else {
+                    row.style.display = 'none'; // Hide non-matching rows
+                }
+            });
+        });
     });
 </script>
 
-
 {% endblock %}
-

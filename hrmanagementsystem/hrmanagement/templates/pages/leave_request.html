@@ -25,8 +25,32 @@ Leave Request Dashboard
         <p class="text-4xl font-bold text-yellow-600">{{ pending_count }}</p>
     </div>
 </div>
+
+<!-- Leave Requests Summary -->
 <div class="bg-white rounded-xl shadow-2xl p-8 mb-12">
     <h3 class="text-3xl font-semibold text-blue-600 mb-6">Leave Requests Summary</h3>
+    
+    <!-- Filter and Sorting Controls -->
+    <div class="flex justify-between mb-6">
+        <div class="relative w-1/4">
+            <label for="status-filter" class="block text-sm font-medium text-gray-700">Filter by Status</label>
+            <select id="status-filter" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+        <div class="relative w-1/4">
+            <label for="sort-order" class="block text-sm font-medium text-gray-700">Sort by</label>
+            <select id="sort-order" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="latest">Latest</option>
+                <option value="oldest">Oldest</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Table for Leave Requests -->
     <div class="overflow-x-auto">
         <table class="min-w-full table-auto border-separate border-spacing-2">
             <thead class="bg-indigo-600 text-white text-sm">
@@ -69,6 +93,8 @@ Leave Request Dashboard
     document.addEventListener('DOMContentLoaded', () => {
         const rows = document.querySelectorAll('#leave-requests-tbody tr');
         const seeAllBtn = document.getElementById('see-all-btn');
+        const statusFilter = document.getElementById('status-filter');
+        const sortOrder = document.getElementById('sort-order');
 
         // Initially hide rows after the fifth
         rows.forEach((row, index) => {
@@ -82,9 +108,34 @@ Leave Request Dashboard
             rows.forEach(row => (row.style.display = 'table-row')); // Show all rows
             seeAllBtn.style.display = 'none'; // Hide the button
         });
+
+        // Filter rows based on status
+        statusFilter.addEventListener('change', () => {
+            const statusValue = statusFilter.value;
+            rows.forEach(row => {
+                const statusText = row.querySelector('td:nth-child(4) span').textContent.trim();
+                if (statusValue === 'all' || statusText === statusValue) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Sort rows based on date order
+        sortOrder.addEventListener('change', () => {
+            const order = sortOrder.value;
+            const sortedRows = Array.from(rows).sort((rowA, rowB) => {
+                const dateA = new Date(rowA.cells[0].textContent);
+                const dateB = new Date(rowB.cells[0].textContent);
+                return order === 'latest' ? dateB - dateA : dateA - dateB;
+            });
+            sortedRows.forEach(row => row.parentNode.appendChild(row)); // Reorder rows in DOM
+        });
     });
 </script>
 
+<!-- Request for Leave Form -->
 <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
     <h3 class="text-3xl font-semibold text-blue-600 mb-6">Request for Leave</h3>
     <form method="post" action="{% url 'leave_request_page' %}">
@@ -110,19 +161,16 @@ Leave Request Dashboard
             </div>
 
             <div>
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <input type="text" id="description" name="description" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <div class="col-span-2">
-                <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Leave</label>
-                <textarea id="reason" name="reason" rows="4" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter your reason"></textarea>
+                <label for="description" class="block text-sm font-medium text-gray-700">Reason</label>
+                <textarea id="description" name="description" rows="4" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
             </div>
         </div>
         <div class="mt-6 text-center">
-            <button type="submit" class="px-6 py-3 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all">Submit Leave Request</button>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition-all">
+                Submit Request
+            </button>
         </div>
     </form>
 </div>
-{% endblock %}
 
+{% endblock %}
