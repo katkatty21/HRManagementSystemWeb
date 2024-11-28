@@ -5,48 +5,79 @@ Leave Request Dashboard
 {% endblock %}
 
 {% block content %}
-<section class="bg-gradient-to-r from-blue-600 to-teal-600 text-white text-center py-12 shadow-lg rounded-b-3xl">
-    <h1 class="text-4xl font-extrabold tracking-wide">Leave Management</h1>
+<section class="bg-gradient-to-r from-blue-600 to-teal-600 text-white text-center py-12 shadow-lg rounded-b-3xl mb-8">
+    <h1 class="text-5xl font-extrabold tracking-wide leading-tight">Leave Management</h1>
     <p class="mt-3 text-xl font-medium">Manage your leave requests and view summaries</p>
 </section>
 
 <!-- Leave Request Stats (Card-Style) -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
-        <h3 class="text-2xl font-semibold text-gray-800">Total Leave Requests</h3>
-        <p class="text-4xl font-bold text-gray-900">{{ total_count }}</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 px-6">
+    <!-- Rejected Leave Requests Card -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center bg-gradient-to-t from-red-50 to-red-100 hover:scale-105 transform duration-300">
+        <div class="flex justify-center items-center mb-4 space-x-2">
+            <!-- Rejected Icon and Count -->
+            <svg class="w-8 h-8 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <p class="text-4xl font-bold text-red-600">{{ rejected_count }}</p>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Rejected Leave Requests</h3>
+        <p class="text-sm text-gray-500 mt-2">Requests that were rejected</p>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
-        <h3 class="text-2xl font-semibold text-gray-800">Approved Leave Requests</h3>
-        <p class="text-4xl font-bold text-green-600">{{ approved_count }}</p>
+
+    <!-- Approved Leave Requests Card -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center bg-gradient-to-t from-green-50 to-green-100 hover:scale-105 transform duration-300">
+        <div class="flex justify-center items-center mb-4 space-x-2">
+            <!-- Approved Icon and Count -->
+            <svg class="w-8 h-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <p class="text-4xl font-bold text-green-600">{{ approved_count }}</p>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Approved Leave Requests</h3>
+        <p class="text-sm text-gray-500 mt-2">Requests that were approved</p>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center">
-        <h3 class="text-2xl font-semibold text-gray-800">Pending Leave Requests</h3>
-        <p class="text-4xl font-bold text-yellow-600">{{ pending_count }}</p>
+
+    <!-- Pending Leave Requests Card -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center bg-gradient-to-t from-yellow-50 to-yellow-100 hover:scale-105 transform duration-300">
+        <div class="flex justify-center items-center mb-4 space-x-2">
+            <!-- Pending Icon and Count -->
+            <svg class="w-8 h-8 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5"></path>
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+            </svg>
+            <p class="text-4xl font-bold text-yellow-600">{{ pending_count }}</p>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Pending Leave Requests</h3>
+        <p class="text-sm text-gray-500 mt-2">Requests that are awaiting approval</p>
     </div>
 </div>
 
 <!-- Leave Requests Summary -->
 <div class="bg-white rounded-xl shadow-2xl p-8 mb-12">
-    <h3 class="text-3xl font-semibold text-blue-600 mb-6">Leave Requests Summary</h3>
-    
-    <!-- Filter and Sorting Controls -->
-    <div class="flex justify-between mb-6">
-        <div class="relative w-1/4">
-            <label for="status-filter" class="block text-sm font-medium text-gray-700">Filter by Status</label>
-            <select id="status-filter" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="all">All</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
-            </select>
-        </div>
-        <div class="relative w-1/4">
-            <label for="sort-order" class="block text-sm font-medium text-gray-700">Sort by</label>
-            <select id="sort-order" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="latest">Latest</option>
-                <option value="oldest">Oldest</option>
-            </select>
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-3xl font-semibold text-blue-600">Leave Requests Summary</h3>
+        
+        <!-- Filter and Sorting Controls -->
+        <div class="flex space-x-6">
+            <!-- Filter by Status -->
+            <div class="relative w-48">
+                <label for="status-filter" class="block text-sm font-medium text-gray-700">Filter by Status</label>
+                <select id="status-filter" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all" {% if filter_status == 'all' %}selected{% endif %}>All</option>
+                    <option value="Pending" {% if filter_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Approved" {% if filter_status == 'Approved' %}selected{% endif %}>Approved</option>
+                    <option value="Rejected" {% if filter_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            <!-- Sort by -->
+            <div class="relative w-48">
+                <label for="sort-order" class="block text-sm font-medium text-gray-700">Sort by</label>
+                <select id="sort-order" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="latest" {% if sort_order == 'latest' %}selected{% endif %}>Latest</option>
+                    <option value="oldest" {% if sort_order == 'oldest' %}selected{% endif %}>Oldest</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -81,61 +112,52 @@ Leave Request Dashboard
         </table>
     </div>
 
-    <!-- See All Button -->
-    <div class="mt-6 text-center">
-        <button id="see-all-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition-all">
-            See All
-        </button>
+    <!-- Pagination Section -->
+    <div class="mt-8 flex justify-between items-center">
+        <span id="pagination-info" class="text-sm text-gray-600">Showing {{ leave_requests.start_index }}-{{ leave_requests.end_index }} of {{ leave_requests.paginator.count }} records</span>
+        <div id="pagination-controls" class="flex space-x-2">
+            {% if leave_requests.has_previous %}
+                <a href="?page=1&status={{ filter_status }}&sort={{ sort_order }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">First</a>
+                <a href="?page={{ leave_requests.previous_page_number }}&status={{ filter_status }}&sort={{ sort_order }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Prev</a>
+            {% endif %}
+            {% for num in leave_requests.paginator.page_range %}
+                {% if leave_requests.number == num %}
+                    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}&status={{ filter_status }}&sort={{ sort_order }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-blue-600 hover:text-white">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if leave_requests.has_next %}
+                <a href="?page={{ leave_requests.next_page_number }}&status={{ filter_status }}&sort={{ sort_order }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</a>
+                <a href="?page={{ leave_requests.paginator.num_pages }}&status={{ filter_status }}&sort={{ sort_order }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Last</a>
+            {% endif %}
+        </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const rows = document.querySelectorAll('#leave-requests-tbody tr');
-        const seeAllBtn = document.getElementById('see-all-btn');
-        const statusFilter = document.getElementById('status-filter');
-        const sortOrder = document.getElementById('sort-order');
+    // Updating filter and sort behavior dynamically
+    document.getElementById('status-filter').addEventListener('change', function() {
+        var status = this.value;
+        var sortOrder = document.getElementById('sort-order').value;
+        var currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('status', status);  
+        currentUrl.searchParams.set('sort', sortOrder);  // Update sort order
+        window.location.href = currentUrl.href;  
+    });
 
-        // Initially hide rows after the fifth
-        rows.forEach((row, index) => {
-            if (index >= 5) {
-                row.style.display = 'none';
-            }
-        });
-
-        // Add click event to "See All" button
-        seeAllBtn.addEventListener('click', () => {
-            rows.forEach(row => (row.style.display = 'table-row')); // Show all rows
-            seeAllBtn.style.display = 'none'; // Hide the button
-        });
-
-        // Filter rows based on status
-        statusFilter.addEventListener('change', () => {
-            const statusValue = statusFilter.value;
-            rows.forEach(row => {
-                const statusText = row.querySelector('td:nth-child(4) span').textContent.trim();
-                if (statusValue === 'all' || statusText === statusValue) {
-                    row.style.display = 'table-row';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-
-        // Sort rows based on date order
-        sortOrder.addEventListener('change', () => {
-            const order = sortOrder.value;
-            const sortedRows = Array.from(rows).sort((rowA, rowB) => {
-                const dateA = new Date(rowA.cells[0].textContent);
-                const dateB = new Date(rowB.cells[0].textContent);
-                return order === 'latest' ? dateB - dateA : dateA - dateB;
-            });
-            sortedRows.forEach(row => row.parentNode.appendChild(row)); // Reorder rows in DOM
-        });
+    document.getElementById('sort-order').addEventListener('change', function() {
+        var sortOrder = this.value;
+        var status = document.getElementById('status-filter').value;
+        var currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('status', status);  
+        currentUrl.searchParams.set('sort', sortOrder);  // Update sort order
+        window.location.href = currentUrl.href;  
     });
 </script>
 
-<!-- Request for Leave Form -->
+
+
 <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
     <h3 class="text-3xl font-semibold text-blue-600 mb-6">Request for Leave</h3>
     <form method="post" action="{% url 'leave_request_page' %}">
@@ -161,16 +183,19 @@ Leave Request Dashboard
             </div>
 
             <div>
-                <label for="description" class="block text-sm font-medium text-gray-700">Reason</label>
-                <textarea id="description" name="description" rows="4" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                <input type="text" id="description" name="description" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="col-span-2">
+                <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Leave</label>
+                <textarea id="reason" name="reason" rows="4" class="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter your reason"></textarea>
             </div>
         </div>
         <div class="mt-6 text-center">
-            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition-all">
-                Submit Request
-            </button>
+            <button type="submit" class="px-6 py-3 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all">Submit Leave Request</button>
         </div>
     </form>
 </div>
-
 {% endblock %}
+

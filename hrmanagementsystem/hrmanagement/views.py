@@ -156,7 +156,10 @@ def calculate_working_and_overtime_hours(time_in, time_out, status):
         return round(working_hours, 3), round(overtime_hours, 3)
     
     return 0, 0
-
+from django.core.paginator import Paginator
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from .models import AttendanceRecord, EmployeeInformation
 def attendance_record(request):
     if 'user_id' not in request.session:
         return redirect('login')
@@ -165,33 +168,46 @@ def attendance_record(request):
         # Retrieve employee information
         employee = EmployeeInformation.objects.get(employee_id=request.session['user_id'])
 
-        # Retrieve attendance records for the employee
-        attendance_records = AttendanceRecord.objects.filter(employee=employee).order_by('-date')
+        # Get filter status from request (default to 'all' if not provided)
+        filter_status = request.GET.get('status', 'all')
+
+        # Retrieve all attendance records for the employee (no filtering for counts)
+        all_attendance_records = AttendanceRecord.objects.filter(employee=employee).order_by('-date')
+
+        # If a specific status is selected, filter the records
+        if filter_status != 'all':
+            attendance_records = all_attendance_records.filter(status=filter_status)
+        else:
+            attendance_records = all_attendance_records
+
+        # Paginate the filtered attendance records
+        paginator = Paginator(attendance_records, 5)  # Show 5 records per page
+        page_number = request.GET.get('page')  # Get the page number from the request
+        page_obj = paginator.get_page(page_number)  # Get the page object for pagination
 
         # Calculate working hours and overtime for each record
-        for record in attendance_records:
+        for record in page_obj:
             record.working_hours, record.overtime_hours = calculate_working_and_overtime_hours(record.time_in, record.time_out, record.status)
             record.save()
 
-        # Calculate the attendance statistics
-        
-        present_days = attendance_records.filter(status='Present').count()
-        absent_days = attendance_records.filter(status='Absent').count()
-        leave_days = attendance_records.filter(status='Leave').count()
+        # Calculate the attendance statistics based on all records (no filter)
+        present_days = all_attendance_records.filter(status='Present').count()
+        absent_days = all_attendance_records.filter(status='Absent').count()
+        leave_days = all_attendance_records.filter(status='Leave').count()
 
         # Retrieve the job directly (assuming it's stored as a string or reference in EmployeeInformation)
         job = employee.job  # If job is directly the job name or ID
 
         # Pass the calculated statistics and job to the context
         context = {
-            'attendance_records': attendance_records,
+            'page_obj': page_obj,
             'user_role': request.session.get('user_role', 'User'),
             'user_name': request.session.get('user_name', ''),
-           
             'present_days': present_days,
             'absent_days': absent_days,
             'leave_days': leave_days,  # Add leave days
             'job': job,  # Pass the job to the context
+            'filter_status': filter_status,  # Pass the filter status to the template for persistence
         }
 
         return render(request, 'pages/attendance_record.html', context)
@@ -199,11 +215,11 @@ def attendance_record(request):
     except EmployeeInformation.DoesNotExist:
         return redirect('login')
 
-
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import LeaveType, LeaveRequest
+from django.core.paginator import Paginator
+from .models import LeaveType, LeaveRequest, EmployeeInformation
 from .forms import LeaveRequestForm
 
 def leave_request_page(request):
@@ -221,7 +237,7 @@ def leave_request_page(request):
     leave_types = LeaveType.objects.all()  # Fetch all leave types
     leave_requests = LeaveRequest.objects.filter(employee=employee)  # Fetch user's leave requests
 
-    # Handle form submission
+    # Handle form submission for new leave request
     if request.method == "POST":
         leave_type_id = request.POST.get('leave_type')
         start_date_str = request.POST.get('start_date')
@@ -257,16 +273,38 @@ def leave_request_page(request):
             messages.error(request, f"Error occurred: {str(e)}")
         return redirect('leave_request_page')
 
+    # Get the counts for approved, pending, and rejected statuses, regardless of the filter
     total_count = leave_requests.count()
-    approved_count = leave_requests.filter(status='Approved').count()
-    pending_count = leave_requests.filter(status='Pending').count()
+    approved_count = LeaveRequest.objects.filter(employee=employee, status='Approved').count()
+    pending_count = LeaveRequest.objects.filter(employee=employee, status='Pending').count()
+    rejected_count = LeaveRequest.objects.filter(employee=employee, status='Rejected').count()
+
+    # Filtering logic
+    filter_status = request.GET.get('status', 'all')  # Default to 'all' if no status is selected
+    if filter_status != 'all':
+        leave_requests = leave_requests.filter(status=filter_status)
+
+    # Sorting logic
+    sort_order = request.GET.get('sort', 'latest')  # Default to 'latest' if no sort is selected
+    if sort_order == 'latest':
+        leave_requests = leave_requests.order_by('-start_date')
+    elif sort_order == 'oldest':
+        leave_requests = leave_requests.order_by('start_date')
+
+    # Pagination
+    paginator = Paginator(leave_requests, 10)  # Show 10 leave requests per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
         'leave_types': leave_types,
-        'leave_requests': leave_requests,
+        'leave_requests': page_obj,
         'total_count': total_count,
         'approved_count': approved_count,
         'pending_count': pending_count,
+        'rejected_count': rejected_count,
+        'filter_status': filter_status,
+        'sort_order': sort_order,
     }
 
     return render(request, 'pages/leave_request.html', context)
