@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class HrmanagementConfig(AppConfig):
+class HraccountConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'hrmanagement'
+    name = 'hraccount'

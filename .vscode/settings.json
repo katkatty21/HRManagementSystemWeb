@@ -1,4 +1,8 @@
 {
-  "cSpell.words": ["adminlte", "hrmanagement"],
-  "git.ignoreLimitWarning": true
+    "cSpell.words": [
+        "hraccount",
+        "hrmanagement",
+        "hrmanagementsystem",
+        "hrrecruitment"
+    ]
 }

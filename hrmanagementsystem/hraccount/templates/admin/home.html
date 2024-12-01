@@ -1,0 +1,53 @@
+<!-- Admin Dashboard -->
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Card 1: User Management -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800">Manage Users</h3>
+        <p class="text-gray-600 mt-2">Add, remove, or update user accounts.</p>
+        <a href="#" class="block mt-4 text-blue-500">View Users</a>
+    </div>
+
+    <!-- Card 2: Payroll Management -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800">Payroll</h3>
+        <p class="text-gray-600 mt-2">Manage employee payroll records.</p>
+        <a href="#" class="block mt-4 text-blue-500">View Payroll</a>
+    </div>
+
+    <!-- Card 3: Training Management -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800">Training</h3>
+        <p class="text-gray-600 mt-2">Organize and manage training sessions for employees.</p>
+        <a href="#" class="block mt-4 text-blue-500">Manage Training</a>
+    </div>
+</div>
+
+<div class="mt-8">
+    <!-- Statistics Cards -->
+    <h3 class="text-xl font-semibold text-gray-800">Key Metrics</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <!-- Total Employees -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h4 class="text-lg font-medium text-gray-600">Total Employees</h4>
+            <p class="text-xl font-semibold text-gray-800">120</p>
+        </div>
+
+        <!-- Active Users -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h4 class="text-lg font-medium text-gray-600">Active Users</h4>
+            <p class="text-xl font-semibold text-gray-800">110</p>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h4 class="text-lg font-medium text-gray-600">Pending Requests</h4>
+            <p class="text-xl font-semibold text-gray-800">5</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

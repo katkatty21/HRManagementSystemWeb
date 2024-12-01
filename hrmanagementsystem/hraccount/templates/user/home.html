@@ -1,0 +1,29 @@
+<!-- User Dashboard -->
+{% extends 'base_user.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Card 1: Attendance -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800">Your Attendance</h3>
+        <p class="text-gray-600 mt-2">Check your attendance records.</p>
+        <a href="#" class="block mt-4 text-blue-500">View Attendance</a>
+    </div>
+
+    <!-- Card 2: Leave Management -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800">Leave Management</h3>
+        <p class="text-gray-600 mt-2">Request, view, and manage your leave days.</p>
+        <a href="#" class="block mt-4 text-blue-500">Manage Leave</a>
+    </div>
+
+    <!-- Card 3: Performance -->
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <h3 class="text-xl font-semibold text-gray-800">Your Performance</h3>
+        <p class="text-gray-600 mt-2">Track your personal performance metrics.</p>
+        <a href="#" class="block mt-4 text-blue-500">View Performance</a>
+    </div>
+</div>
+{% endblock %}

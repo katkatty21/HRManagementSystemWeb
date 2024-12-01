@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to SRK Solutions</title>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h2>Welcome to SRK Solutions!</h2>
+        <p>Hello {{ user.first_name }},</p>
+        <p>Here are your account details:</p>
+        <br>
+        <ul>
+            <li><strong>Email:</strong> {{ user.email }}</li>
+            <li><strong>Generated Password:</strong> {{ generated_password }}</li>
+        </ul>
+        <br>
+        <p>You can log in to your account at <a href="http://127.0.0.1:8000/">Login</a></p>
+    </div>
+</body>
+</html>

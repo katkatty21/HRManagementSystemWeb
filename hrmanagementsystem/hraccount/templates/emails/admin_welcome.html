@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to SRK Admin</title>
+</head>
+<body>
+    <div style="text-align: center;">
+        <!-- Local Image from static folder -->
+        <img src="{% static 'images/logo.png' %}" alt="SRK Logo" style="max-width: 200px; margin-bottom: 20px;">
+
+        <h2>Welcome to SRK Admin!</h2>
+        <p>Hello {{ user.first_name }},</p>
+        <p>Here are your account details:</p>
+        <br>
+        <ul>
+            <li><strong>Email:</strong> {{ user.email }}</li>
+            <li><strong>Generated Password:</strong> {{ generated_password }}</li>
+        </ul>
+        <br>
+        <p>You can log in to your account at <a href="http://127.0.0.1:8000/">Login</a></p>
+        <p>You may also access our built-in admin sites <a href="http://127.0.0.1:8000/admin/">Admin</a></p>
+    </div>
+</body>
+</html>
