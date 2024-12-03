@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'hrmanagementsystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dbhrmanagement',
+        'NAME': 'dbhrmanagementsystem',
         'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': 'localhost'

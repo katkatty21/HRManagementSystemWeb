@@ -17,7 +17,7 @@ class UserAccount(AbstractUser):
         max_length=20, 
         choices=[('Admin', 'Admin'), ('User', 'User')], 
         default='User', 
-        blank=False  # Ensures role is not blank
+        blank=False
     )
     date_account_added = models.DateField(auto_now=True)
 
