@@ -1,0 +1,180 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}
+Self-Assessment Form
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-10 bg-white rounded-lg shadow-xl">
+    <h2 class="text-3xl font-semibold mb-6 text-center text-gray-800">Self Assessment</h2>
+
+    <form method="POST" class="space-y-10">
+        {% csrf_token %}
+
+        <!-- Personal Information -->
+        <div class="mb-8 text-center">
+            <p class="text-lg text-gray-700 font-semibold">
+                Employee: 
+                <strong class="text-blue-600">
+                    {{ employee.first_name }} {{ employee.last_name }}
+                </strong>
+            </p>
+        </div>
+
+        <!-- Self-Assessment Questions -->
+        <div class="space-y-6">
+            <!-- Performance Rating -->
+            <div class="space-y-4 border-b border-gray-300 pb-6">
+                <label class="block text-lg font-medium text-gray-700">How do you rate your overall performance during this period?</label>
+                <div class="flex justify-center space-x-10">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="performance_rating" value="1" class="mr-2" required>
+                        <span class="text-md text-gray-600">Poor</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="performance_rating" value="2" class="mr-2" required>
+                        <span class="text-md text-gray-600">Fair</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="performance_rating" value="3" class="mr-2" required>
+                        <span class="text-md text-gray-600">Good</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="performance_rating" value="4" class="mr-2" required>
+                        <span class="text-md text-gray-600">Excellent</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Skill Development -->
+            <div class="space-y-4 border-b border-gray-300 pb-6">
+                <label class="block text-lg font-medium text-gray-700">How have you developed your skills over the past year?</label>
+                <div class="flex justify-center space-x-10">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="skill_development" value="1" class="mr-2" required>
+                        <span class="text-md text-gray-600">Poor</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="skill_development" value="2" class="mr-2" required>
+                        <span class="text-md text-gray-600">Fair</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="skill_development" value="3" class="mr-2" required>
+                        <span class="text-md text-gray-600">Good</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="skill_development" value="4" class="mr-2" required>
+                        <span class="text-md text-gray-600">Excellent</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Teamwork -->
+            <div class="space-y-4 border-b border-gray-300 pb-6">
+                <label class="block text-lg font-medium text-gray-700">How effectively have you worked with your team during this period?</label>
+                <div class="flex justify-center space-x-10">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="teamwork" value="1" class="mr-2" required>
+                        <span class="text-md text-gray-600">Needs Improvement</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="teamwork" value="2" class="mr-2" required>
+                        <span class="text-md text-gray-600">Satisfactory</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="teamwork" value="3" class="mr-2" required>
+                        <span class="text-md text-gray-600">Effective</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="teamwork" value="4" class="mr-2" required>
+                        <span class="text-md text-gray-600">Highly Effective</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Communication Skills -->
+            <div class="space-y-4 border-b border-gray-300 pb-6">
+                <label class="block text-lg font-medium text-gray-700">How do you assess your communication skills with colleagues and supervisors?</label>
+                <div class="flex justify-center space-x-10">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="communication_skills" value="1" class="mr-2" required>
+                        <span class="text-md text-gray-600">Poor</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="communication_skills" value="2" class="mr-2" required>
+                        <span class="text-md text-gray-600">Fair</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="communication_skills" value="3" class="mr-2" required>
+                        <span class="text-md text-gray-600">Good</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="communication_skills" value="4" class="mr-2" required>
+                        <span class="text-md text-gray-600">Excellent</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Company Culture -->
+            <div class="space-y-4 border-b border-gray-300 pb-6">
+                <label class="block text-lg font-medium text-gray-700">How would you rate the company's culture and values? Do you feel aligned with them?</label>
+                <div class="flex justify-center space-x-10">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="company_culture" value="1" class="mr-2" required>
+                        <span class="text-md text-gray-600">Poorly Aligned</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="company_culture" value="2" class="mr-2" required>
+                        <span class="text-md text-gray-600">Somewhat Aligned</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="company_culture" value="3" class="mr-2" required>
+                        <span class="text-md text-gray-600">Well Aligned</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="company_culture" value="4" class="mr-2" required>
+                        <span class="text-md text-gray-600">Fully Aligned</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Work-life Balance -->
+            <div class="space-y-4 border-b border-gray-300 pb-6">
+                <label class="block text-lg font-medium text-gray-700">How would you rate your work-life balance within the company?</label>
+                <div class="flex justify-center space-x-10">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="work_life_balance" value="1" class="mr-2" required>
+                        <span class="text-md text-gray-600">Poor</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="work_life_balance" value="2" class="mr-2" required>
+                        <span class="text-md text-gray-600">Fair</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="work_life_balance" value="3" class="mr-2" required>
+                        <span class="text-md text-gray-600">Good</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="work_life_balance" value="4" class="mr-2" required>
+                        <span class="text-md text-gray-600">Excellent</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Suggestions for Improvement -->
+            <div class="space-y-4">
+                <label for="suggestions_for_improvement" class="block text-lg font-medium text-gray-700">Suggestions for improvement</label>
+                <textarea name="suggestions_for_improvement" id="suggestions_for_improvement" rows="4" class="block w-full px-4 py-2 text-lg text-gray-700 border border-gray-300 rounded-lg" required></textarea>
+            </div>
+
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-8 text-center">
+            <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                Submit Self-Assessment
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

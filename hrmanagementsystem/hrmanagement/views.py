@@ -350,3 +350,127 @@ def performance_feedback(request):
         'performance_reviews': performance_reviews,
         'feedback_data': feedback_data,
     })
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import EmployeeInformation, PeerFeedback
+
+def peer_feedback(request):
+    # Check if the 'user_id' exists in the session
+    user_id = request.session.get('user_id')
+    if not user_id:
+        messages.error(request, "User ID not found in session. Please log in again.")
+        return redirect('login')  # Redirect to login if 'user_id' is not in the session
+
+    try:
+        # Retrieve the logged-in user's employee information using 'user_id' from session
+        evaluator = EmployeeInformation.objects.get(employee_id=user_id)
+    except EmployeeInformation.DoesNotExist:
+        messages.error(request, f"Employee information not found for user with ID {user_id}.")
+        return redirect('home')  # Redirect to the home page or any relevant page
+    except Exception as e:
+        messages.error(request, f"An unexpected error occurred while fetching employee info: {str(e)}")
+        return redirect('home')  # Handle any unexpected error gracefully
+
+    try:
+        # Fetch employees from the same department as the evaluator and get their names
+        employees_to_evaluate = EmployeeInformation.objects.filter(job__department=evaluator.job.department)
+
+        # Get employee IDs that have already been given feedback
+        feedback_given_ids = PeerFeedback.objects.filter(from_user=evaluator).values_list('to_user', flat=True)
+
+        # Filter out employees who have already received feedback
+        employees_to_evaluate = employees_to_evaluate.exclude(employee_id__in=feedback_given_ids).values('employee_id', 'first_name', 'last_name')
+        
+    except Exception as e:
+        messages.error(request, f"An error occurred while fetching employees to evaluate: {str(e)}")
+        return redirect('peer_feedback')  # Return to peer feedback page if there's an issue with fetching employees
+
+    if request.method == 'POST':
+        # Get the selected employee to evaluate (from the POST request)
+        employee_to_evaluate_id = request.POST.get('employee_to_evaluate')
+
+        if not employee_to_evaluate_id:
+            messages.error(request, "No employee selected for evaluation. Please select an employee.")
+            return redirect('peer_feedback')  # Redirect back to the peer feedback page if no employee selected
+
+        try:
+            # Ensure the employee exists before proceeding
+            employee_to_evaluate = EmployeeInformation.objects.filter(employee_id=employee_to_evaluate_id).first()
+
+            if not employee_to_evaluate:
+                messages.error(request, f"Selected employee with ID {employee_to_evaluate_id} not found.")
+                return redirect('peer_feedback')
+
+            # Create and save the feedback for the selected employee
+            feedback = PeerFeedback(
+                from_user=evaluator,
+                to_user=employee_to_evaluate,  # Save the full EmployeeInformation object, not just the name
+                question_1=request.POST.get('question_1'),
+                question_2=request.POST.get('question_2'),
+                question_3=request.POST.get('question_3'),
+                question_4=request.POST.get('question_4'),
+                question_5=request.POST.get('question_5'),
+                question_6=request.POST.get('question_6')
+            )
+            feedback.save()
+
+            # Show a success message and re-render the peer feedback page
+            messages.success(request, "Feedback submitted successfully!")
+            return redirect('peer_feedback')  # Redirect back to the peer feedback page to avoid re-submission
+
+        except Exception as e:
+            messages.error(request, f"An error occurred while processing the feedback: {str(e)}")
+            return redirect('peer_feedback')  # Return to the page if any error occurs during feedback processing
+
+    # Render the page with the evaluator's information and the list of employees to evaluate
+    return render(request, 'pages/peer_feedback.html', {
+        'evaluator': evaluator,
+        'employees_to_evaluate': employees_to_evaluate
+    })
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import EmployeeInformation, SelfAssessment
+
+def self_assessment_view(request):
+    # Check if the user is logged in and has an associated employee record
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    try:
+        employee = EmployeeInformation.objects.get(employee_id=request.session['user_id'])
+    except EmployeeInformation.DoesNotExist:
+        messages.error(request, "You don't have employee information linked to your account.")
+        return redirect('home')
+
+    if request.method == 'POST':
+        # Collect form data dynamically from the form
+        performance_rating = request.POST.get('performance_rating')
+        skill_development = request.POST.get('skill_development')
+        teamwork = request.POST.get('teamwork')
+        communication_skills = request.POST.get('communication_skills')
+        company_culture = request.POST.get('company_culture')
+        work_life_balance = request.POST.get('work_life_balance')
+        suggestions_for_improvement = request.POST.get('suggestions_for_improvement')
+
+        # Validate the form
+        if not all([performance_rating, skill_development, teamwork, communication_skills, company_culture, work_life_balance, suggestions_for_improvement]):
+            messages.error(request, "All fields are required.")
+            return render(request, 'pages/self_assessment.html', {'employee': employee})
+
+        # Save the self-assessment data
+        SelfAssessment.objects.create(
+            employee=employee,
+            performance_rating=performance_rating,
+            skill_development=skill_development,
+            teamwork=teamwork,
+            communication_skills=communication_skills,
+            company_culture=company_culture,
+            work_life_balance=work_life_balance,
+            suggestions_for_improvement=suggestions_for_improvement,
+        )
+        messages.success(request, "Your self-assessment has been submitted successfully.")
+        return redirect('home')
+
+    return render(request, 'pages/self_assessment.html', {'employee': employee})

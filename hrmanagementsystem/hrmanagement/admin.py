@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView
 from django.utils.html import format_html
 from .models import (
-    Department, Job, EmployeeInformation, UserAccount, 
+    Department, Job, EmployeeInformation, PeerFeedback, SelfAssessment, UserAccount, 
     AttendanceRecord, EmployeePayroll, LeaveRequest, LeaveType,
     JobOpening, Applicant, PerformanceReport, PerformanceReview,
     SanctionReport, Trainings
@@ -209,3 +209,24 @@ class TrainingAdmin(admin.ModelAdmin):
     search_fields = ('training_name', 'employee__first_name', 'employee__last_name', 'status')
     list_filter = ('status', 'start_date', 'end_date')
     ordering = ('start_date',)
+
+@admin.register(PeerFeedback)
+class PeerFeedbackAdmin(admin.ModelAdmin):
+    list_display = ('feedback_id', 'from_user', 'to_user', 'created_at')
+    list_display_links = ('feedback_id', 'from_user')
+    search_fields = ('from_user__first_name', 'from_user__last_name', 'to_user__first_name', 'to_user__last_name')
+    list_filter = ('created_at',)
+    ordering = ('created_at',)
+
+
+
+from .models import SelfAssessment
+
+@admin.register(SelfAssessment)
+class SelfAssessmentAdmin(admin.ModelAdmin):
+    list_display = ('self_assessment_id', 'employee', 'performance_rating', 'skill_development', 
+                    'teamwork', 'communication_skills', 'company_culture', 
+                    'work_life_balance', 'submitted_at')
+    list_filter = ('performance_rating', 'teamwork', 'company_culture', 'submitted_at')
+    search_fields = ('employee__first_name', 'employee__last_name', 'suggestions_for_improvement')
+    ordering = ('-submitted_at',)

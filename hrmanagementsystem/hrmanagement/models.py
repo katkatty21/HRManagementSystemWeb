@@ -314,3 +314,92 @@ class Trainings(models.Model):
 
     def __str__(self):
         return f"{self.training_name} ({self.employee.first_name} {self.employee.last_name})"
+
+
+from django.db import models
+import uuid
+
+class PeerFeedback(models.Model):
+    feedback_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    from_user = models.ForeignKey(
+        EmployeeInformation,
+        on_delete=models.CASCADE,
+        related_name='feedback_given'
+    )
+    to_user = models.ForeignKey(
+        EmployeeInformation,
+        on_delete=models.CASCADE,
+        related_name='feedback_received'
+    )
+    question_1 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_2 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_3 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_4 = models.CharField(
+        choices=[('yes', 'Yes'), ('no', 'No')],
+        max_length=3,
+        null=True,
+        blank=True
+    )
+    question_5 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_6 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.from_user} to {self.to_user}"
+
+
+class SelfAssessment(models.Model):
+    RATING_CHOICES = [
+        (1, 'Poor'),
+        (2, 'Fair'),
+        (3, 'Good'),
+        (4, 'Excellent'),
+    ]
+
+    TEAMWORK_CHOICES = [
+        (1, 'Needs Improvement'),
+        (2, 'Satisfactory'),
+        (3, 'Effective'),
+        (4, 'Highly Effective'),
+    ]
+
+    ALIGNMENT_CHOICES = [
+        (1, 'Poorly Aligned'),
+        (2, 'Somewhat Aligned'),
+        (3, 'Well Aligned'),
+        (4, 'Fully Aligned'),
+    ]
+
+    self_assessment_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    employee = models.ForeignKey('EmployeeInformation', on_delete=models.CASCADE, related_name='self_assessments')
+    performance_rating = models.IntegerField(choices=RATING_CHOICES)
+    skill_development = models.IntegerField(choices=RATING_CHOICES)
+    teamwork = models.IntegerField(choices=TEAMWORK_CHOICES)
+    communication_skills = models.IntegerField(choices=RATING_CHOICES)
+    company_culture = models.IntegerField(choices=ALIGNMENT_CHOICES)
+    work_life_balance = models.IntegerField(choices=RATING_CHOICES)
+    suggestions_for_improvement = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Self-Assessment by {self.employee.first_name} {self.employee.last_name} on {self.submitted_at}"
