@@ -1,0 +1,82 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Add Job{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-8 bg-white shadow-lg rounded-lg">
+    <h1 class="text-3xl font-semibold text-gray-700 mb-6">Add New Job</h1>
+
+    <!-- Display success/error messages -->
+    {% if messages %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Job Title -->
+        <div class="flex flex-col">
+            <label for="id_job_title" class="text-sm font-medium text-gray-600 mb-2">Job Title</label>
+            <input type="text" name="job_title" id="id_job_title" value="{{ form.job_title.value | default:'' }}" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <!-- Department Dropdown -->
+        <div class="flex flex-col">
+            <label for="id_department" class="text-sm font-medium text-gray-600 mb-2">Department</label>
+            <select name="department" id="id_department" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                {% for department in departments %}
+                    <option value="{{ department.department_id }}" {% if form.department.value == department.department_id %}selected{% endif %}>
+                        {{ department.department_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Salary Range -->
+        <div class="flex flex-col">
+            <label for="id_salary_range" class="text-sm font-medium text-gray-600 mb-2">Salary Range</label>
+            <input type="text" name="salary_range" id="id_salary_range" value="{{ form.salary_range.value | default:''}}" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <!-- Job Description -->
+        <div class="flex flex-col">
+            <label for="id_job_description" class="text-sm font-medium text-gray-600 mb-2">Job Description</label>
+            <textarea name="job_description" id="id_job_description" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ form.job_description.value | default:''}}</textarea>
+        </div>
+
+        <!-- Requirements -->
+        <div class="flex flex-col">
+            <label for="id_requirements" class="text-sm font-medium text-gray-600 mb-2">Requirements</label>
+            <textarea name="requirements" id="id_requirements" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ form.requirements.value | default:''}}</textarea>
+        </div>
+
+        <!-- Status Dropdown -->
+        <div class="flex flex-col">
+            <label for="id_status" class="text-sm font-medium text-gray-600 mb-2">Status</label>
+            <select name="status" id="id_status" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="OPEN" {% if form.status.value == 'OPEN' %}selected{% endif %}>Open</option>
+                <option value="FILLED" {% if form.status.value == 'FILLED' %}selected{% endif %}>Filled</option>
+                <option value="CLOSED" {% if form.status.value == 'CLOSED' %}selected{% endif %}>Closed</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6">
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Save Job
+            </button>
+        </div>
+    </form>
+
+    <!-- Cancel Link -->
+    <div class="mt-4">
+        <a href="{% url 'jobs' %}" class="text-blue-500 hover:text-blue-700">Cancel</a>
+    </div>
+</div>
+{% endblock %}

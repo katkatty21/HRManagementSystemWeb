@@ -9,12 +9,15 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth import logout
-from .models import UserAccount
-from django.template.loader import render_to_string
+from django.db import IntegrityError
+from .models import UserAccount, Department, Job, EmployeeInformation
+from .forms import DepartmentForm, JobForm
+
 
 
 
@@ -199,4 +202,104 @@ def logout_view(request):
     # Logging out the user and redirecting to login page
     logout(request)
     return redirect('login')  # Adjust the 'login' URL if needed
+
+
+# List Departments
+@login_required(login_url='login')
+def department_list(request):
+    departments = Department.objects.all()
+    return render(request, 'admin/departments.html', {'departments': departments})
+
+# Add New Department
+@login_required(login_url='login')
+def add_department(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'New department added successfully!')
+            return redirect('department_list')
+        else:
+            messages.error(request, 'Error adding department. Please try again.')
+    else:
+        form = DepartmentForm()
+    return render(request, 'admin/add_department.html', {'form': form})
+
+# Edit Department
+@login_required(login_url='login')
+def edit_department(request, department_id):
+    department = get_object_or_404(Department, department_id=department_id)
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Updated department: {department.department_name}')
+            return redirect('department_list')
+        else:
+            messages.error(request, 'Error updating department. Please try again.')
+    else:
+        form = DepartmentForm(instance=department)
+    return render(request, 'admin/edit_department.html', {'form': form, 'department': department})
+
+# Delete Department
+@login_required(login_url='login')
+def delete_department(request, department_id):
+    department = get_object_or_404(Department, department_id=department_id)
+    try:
+        department.delete()
+        messages.success(request, f'Department "{department.department_name}" deleted successfully!')
+    except Exception as e:
+        messages.error(request, f'Error deleting department: {str(e)}')
+    return redirect('department_list')
+
+# List all jobs
+@login_required(login_url='login')
+def jobs(request):
+    jobs = Job.objects.all()
+    return render(request, 'admin/jobs.html', {'jobs': jobs})
+    
+# Add a new job
+@login_required(login_url='login')
+def add_job(request):
+    departments = Department.objects.all()
+    if request.method == 'POST':
+        form = JobForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Job added successfully!')
+            return redirect('jobs')  # Redirect to job listing page
+        else:
+            messages.error(request, 'Error adding job. Please try again.')
+    else:
+        form = JobForm()
+    return render(request, 'admin/add_job.html', {'form': form, 'departments': departments})
+
+# View for editing an existing job
+@login_required(login_url='login')
+def edit_job(request, job_id):
+    job = get_object_or_404(Job, job_id=job_id)
+    departments = Department.objects.all()
+    if request.method == 'POST':
+        form = JobForm(request.POST, instance=job)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Job updated successfully!')
+            return redirect('jobs')  # Redirect to job listing page
+        else:
+            messages.error(request, 'Error updating job. Please try again.')
+    else:
+        form = JobForm(instance=job)
+    return render(request, 'admin/edit_job.html', {'form': form, 'job': job, 'departments': departments})
+
+
+# Delete a job (with confirmation)
+@login_required(login_url='login')
+def delete_job(request, job_id):
+    job = get_object_or_404(Job, job_id=job_id)
+
+    if request.method == 'POST':
+        job.delete()
+        return redirect('jobs')  # Redirect to the job list
+
+    return render(request, 'admin/job_delete_confirmation.html', {'job': job})
 
