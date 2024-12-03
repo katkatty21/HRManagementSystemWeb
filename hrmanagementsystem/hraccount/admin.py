@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import UserAccount, Department, Job, EmployeeInformation
+from django.contrib import admin
+from django.utils.html import mark_safe
 
 # Admin for UserAccount
 @admin.register(UserAccount)
@@ -19,17 +21,19 @@ class DepartmentAdmin(admin.ModelAdmin):
 # Admin for Job
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
-    list_display = ('job_title', 'department', 'salary_min', 'salary_max')  # Columns to display
+    list_display = ('job_title', 'department', 'salary_range','job_description', 'requirements', 'status' )  # Columns to display
     search_fields = ('job_title', 'department__department_name')  # Searchable fields
     list_filter = ('department',)  # Filterable fields
     ordering = ('job_title',)  # Default ordering
     exclude = ('job_id',)  # Exclude job_id from forms
 
-# Admin for EmployeeInformation
+
+
+# EmployeeInformation Admin
 @admin.register(EmployeeInformation)
 class EmployeeInformationAdmin(admin.ModelAdmin):
     list_display = (
-        'profile_picture',
+        'profile_picture_preview',  # Added profile picture preview
         'first_name', 
         'last_name', 
         'email', 
@@ -38,10 +42,8 @@ class EmployeeInformationAdmin(admin.ModelAdmin):
         'nationality', 
         'city', 
         'employment_status', 
-        'role', 
         'job'
-        
-    )  # Columns to display
+    ) 
     search_fields = (
         'first_name', 
         'last_name', 
@@ -51,9 +53,14 @@ class EmployeeInformationAdmin(admin.ModelAdmin):
         'employment_status', 
         'job__job_title'
     )  # Searchable fields
-    list_filter = ('sex', 'marital_status', 'role', 'job')  # Filterable fields
+    list_filter = ('sex', 'marital_status', 'job')  # Filterable fields
     ordering = ('last_name', 'first_name')  # Default ordering
-    #exclude = ('employee_id', 'profile_picture')  # Exclude fields from forms
-    list_display_links = ('first_name',)
+    list_display_links = ('first_name',)  # Make 'first_name' clickable to access the detail view
+    readonly_fields = ('email',)  # Readonly email field (derived from UserAccount)
 
-    readonly_fields = ('email',) 
+    # Method to display profile picture preview
+    def profile_picture_preview(self, obj):
+        if obj.profile_picture:
+            return mark_safe(f'<img src="{obj.profile_picture.url}" alt="Profile Picture" width="50px" height="50px" />')
+        return "No Image"
+    profile_picture_preview.short_description = 'Profile Picture'  # Custom label for the column

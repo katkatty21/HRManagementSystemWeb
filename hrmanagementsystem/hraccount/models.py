@@ -1,10 +1,14 @@
 import uuid
-import base64
+import os
 from django.db import models
 from django.utils.html import mark_safe
-from io import BytesIO
-from PIL import Image
 from django.contrib.auth.models import AbstractUser
+from enum import Enum
+
+class JobStatus(Enum):
+    OPEN = 'open'
+    CLOSED = 'closed'
+    FILLED = 'filled'
 
 # UserAccount Model
 class UserAccount(AbstractUser):
@@ -40,16 +44,24 @@ class Department(models.Model):
 # Job Model
 class Job(models.Model):
     job_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="jobs")
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     job_title = models.CharField(max_length=50)
-    salary_min = models.DecimalField(max_digits=10, decimal_places=2)
-    salary_max = models.DecimalField(max_digits=10, decimal_places=2)
+    salary_range = models.CharField(max_length=50, blank=True, null=True)
+    job_description = models.TextField(blank=True, null=True)
+    requirements = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=[(status.name, status.value) for status in JobStatus], default=JobStatus.OPEN)
 
     def __str__(self):
         return self.job_title
 
 # EmployeeInformation Model
 class EmployeeInformation(models.Model):
+
+    def upload_profile_picture(instance, filename):
+        ext = filename.split('.')[-1]  # Get file extension
+        filename = f"{instance.first_name}_{instance.last_name}_{uuid.uuid4()}.{ext}"  # Generate unique filename
+        return os.path.join('photos', 'employees', filename)
+
     SEX_CHOICES = [
         ('Choose', 'Choose'),
         ('Female', 'Female'),
@@ -68,7 +80,7 @@ class EmployeeInformation(models.Model):
         primary_key=True,
         related_name='employee_information'
     )
-    profile_picture = models.BinaryField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to=upload_profile_picture, null=True, blank=True)  # Updated field
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100)
@@ -91,11 +103,6 @@ class EmployeeInformation(models.Model):
     emergency_contact_name = models.CharField(max_length=50)
     emergency_contact_rs = models.CharField(max_length=50)
     emergency_contact_number = models.CharField(max_length=20)
-    role = models.CharField(
-        max_length=20,
-        choices=[('Admin', 'Admin'), ('User', 'User')],
-        default='User'
-    )
     job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name="employee_jobs")
 
     def save(self, *args, **kwargs):
@@ -103,26 +110,10 @@ class EmployeeInformation(models.Model):
             self.email = self.employee_id.email  # Ensure email is synced from UserAccount
         super().save(*args, **kwargs)
 
-    def save_profile_picture(self, image_file):
-        """
-        Save profile picture as binary data.
-        """
-        img = Image.open(image_file)
-        img_format = img.format.lower()
-
-        if img_format not in ['png', 'jpeg', 'jpg']:
-            raise ValueError("Only PNG or JPEG files are supported")
-
-        img_io = BytesIO()
-        img.save(img_io, format=img_format.upper())
-        img_io.seek(0)
-        self.profile_picture = img_io.read()
-
     def profile_preview(self):
         """
-        Display profile picture in admin panel or frontend as an HTML image.
+        Display profile picture as an HTML image tag in admin or frontend.
         """
         if self.profile_picture:
-            img_data = base64.b64encode(self.profile_picture).decode('utf-8')
-            return mark_safe(f'<img src="data:image/png;base64,{img_data}" width="50" height="50" style="border-radius: 50%;" />')
-        return None
+            return mark_safe(f'<img src="{self.profile_picture.url}" alt="Profile Picture" width="50px" height="50px" style="border-radius: 50%;"/>')
+        return mark_safe('<span>No profile picture</span>')
