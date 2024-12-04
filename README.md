@@ -32,7 +32,7 @@ The HR Management System is a comprehensive platform designed to streamline and 
 Key features include:
 
 - Employee Profiles: Centralized database for managing employee records and personal information.
-- Attendance Management: Efficiently track attendance, leaves, and absences with real-time counts for absentees, leaves, and those present, while providing comprehensive records to ensure transparency and accountability.
+- Attendance Management: Efficiently track attendance, leaves, and absences with real-time counts for absentees, leaves, and those present, while providing comprehensive records, with overtime and  regular hours record to ensure transparency and accountability.
 - Payroll Management: Automated calculations, deductions, and payments with secure storage and accessibility
 - Performance Management: Tools for peer feedback, self-assessment, supervisor feedback, and sanction reporting
 - Recruitment: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
