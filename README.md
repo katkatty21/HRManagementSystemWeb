@@ -1,14 +1,20 @@
-<!-- PROJECT LOGO -->
+
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/c56ec18e-af4d-42a2-8def-772cbefbb604" alt="logoText">
-    <h3>HR Management System READ ME</h3>
+    <img src="https://github.com/user-attachments/assets/c56ec18e-af4d-42a2-8def-772cbefbb604" alt="logo" width="200">
+    <h1>HR Management System</h1>
+    <p><i>Your one-stop solution for seamless HR operations</i></p>
+    <img src="https://img.shields.io/badge/License-MIT-blue" alt="License Badge">
+    <img src="https://img.shields.io/badge/Python-3.x-brightgreen" alt="Python Badge">
+    <img src="https://img.shields.io/badge/Django-4.x-orange" alt="Django Badge">
 </div>
+
 <details>
   <summary>Table of Contents</summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#key-features">Key Features</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -21,105 +27,46 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contact">Contact</a></li>
-     <li><a href="#additional-resources">Additional Resources</a></li>
+    <li><a href="#additional-resources">Additional Resources</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
-## About The Project
-
-The HR Management System is a comprehensive platform designed to streamline and optimize the core functions of Human Resources. Built to simplify processes like employee data management, attendance tracking, payroll processing, performance evaluations, and recruitment, this system serves as an all-in-one solution for HR departments of any size. By centralizing data and automating repetitive tasks, it reduces administrative workload and helps HR teams focus on strategic activities, such as talent development and employee engagement.
-
-Key features include:
-
-- Employee Profiles: Centralized database for managing employee records and personal information.
-- Attendance Management: Efficiently track attendance, leaves, and absences with real-time counts for absentees, leaves, and those present, while providing comprehensive records, with overtime and  regular hours record to ensure transparency and accountability.
-- Payroll Management: Automated calculations, deductions, and payments with secure storage and accessibility
-- Performance Management: Tools for peer feedback, self-assessment, supervisor feedback, and sanction reporting
-- Recruitment: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
-- Reporting and Analytics: Real-time insights into HR data to support decision-making and compliance.
 
 
+## 🌟 About The Project
 
-## Built With
-
-
-- **Python Django**: A high-level Python web framework that encourages rapid development and clean, pragmatic design.
-- **PostgreSQL**: A powerful, open-source object-relational database system.
+The **HR Management System** is a comprehensive platform designed to streamline and optimize the core functions of Human Resources. Built to simplify processes like employee data management, attendance tracking, payroll processing, performance evaluations, and recruitment, this system serves as an all-in-one solution for HR departments of any size. By centralizing data and automating repetitive tasks, it reduces administrative workload and helps HR teams focus on strategic activities, such as talent development and employee engagement.
 
 
-- **CSS Framework: Tailwind CSS**: A utility-first CSS framework for creating custom designs directly in your markup.
+### 🎯 Key Features
+- **Employee Profiles**: Centralized database for managing employee records and personal information.
+- **Attendance Management**: Efficiently track attendance, leaves, and absences with real-time counts for absentees, leaves, and those present, while providing comprehensive records, with overtime and  regular hours record to ensure transparency and accountability.
+- **Payroll Management**: Automated calculations, deductions, and payments with secure storage and accessibility
+- **Performance Management**: Tools for peer feedback, self-assessment, supervisor feedback, and sanction reporting
+- **Recruitment Tools**: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
+- **Analytics Dashboard**: Real-time insights into HR data to support decision-making and compliance.
 
 
 
-## Getting Started
 
-1. **Direct to your folder**
-   - Open your terminal or command prompt.
-   - Navigate to the folder where you want to set up your Django project.
+## 🛠️ Built With  
 
-2. **Ensure virtual environment is installed**
-   - Run the following commands to install virtualenv if not already installed:
-     ```bash
-     python -m pip install virtualenv
-     py -m pip install virtualenv
-     ```
-
-3. **Create the environment**
-   - Run:
-     ```bash
-     virtualenv myenv
-     ```
-
-4. **Activate the environment**
-   - For VS Code:
-     ```bash
-     myenv\Scripts\activate
-     ```
-   - For Command Prompt:
-     ```bash
-     .\myenv\Scripts\activate
-     ```
-   - You should see `(myenv)` on the left side of your terminal prompt.
-
-5. **Install Django**
-   - Run:
-     ```bash
-     pip install django
-     ```
-
-6. **Create the project**
-   - Run:
-     ```bash
-     django-admin startproject projectname
-     ```
-
-7. **Create an app**
-   - Navigate to your project directory:
-     ```bash
-     cd projectname
-     ```
-   - Create a new app:
-     ```bash
-     django-admin startapp appname
-     ```
-
-8. **Ensure proper file arrangement**
-   - Verify your directories and files are correctly set up.
-   - Continuation of the setup involves editing `.py` files as needed for your project.
+- **Backend**: Django (Python) - A high-level web framework for efficient and scalable backend development.  
+- **Database**: PostgreSQL - A powerful and reliable database system for managing structured data.  
+- **Frontend**: Tailwind CSS - A utility-first CSS framework for designing responsive and customizable user interfaces.  
 
 
+## 🚀 Getting Started
 
-## Prerequisites
+### Prerequisites
+Ensure you have the following:
+- Python 3.x
+- Django installed in a virtual environment
+- PostgreSQL with `pgAdmin`
+- Basic understanding of Django ORM and SQL
 
-- Python 3.x installed and configured.
-- Django installed in a virtual environment.
-- PostgreSQL installed with `pgAdmin`.
-- Basic understanding of SQL and Django ORM.
-
-## Installation
-
-
+### Installation
 
 **Tailwind CSS Framework Setup** 
 
@@ -195,34 +142,52 @@ Key features include:
    - To run SQL commands, right-click on the database and select `Query Tool`.
 
 
-## Usage
+## 🎯 Usage
 
-- Start the PostgreSQL service and ensure it is running.
-- Use `pgAdmin` for database management and to execute SQL queries if needed.
-- Run `python manage.py makemigrations` and `python manage.py migrate` in your Django project to apply model changes to the database.
-- Implement database interactions using Django ORM and design a user-friendly interface for performing CRUD operations. Utilize Tailwind CSS to ensure responsive and visually appealing design.
+1. **Run Migrations**
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+2. **Start the Development Server**
+   ```bash
+   python manage.py runserver
+   ```
+
+3. **Access the Application**
+   Visit `http://127.0.0.1:8000/` in your browser.
+
+4. **Explore Features**
+   - Leverage the Django admin panel for CRUD operations.
+   - Use the Tailwind-enhanced interface for a smooth user experience.
 
 
-## Contact
 
-- Sophie Seismundo; sophie.seismundo@cit.edu
-- Katrina Amores: katrina.amores@cit.edu
-- Rey Christian Bacolod: reychristian.bacolod@cit.edu
+## 📞 Contact
 
 
-## Acknowledgments
+  
+- [Sophie Anneka Seismundo](sophieanneka.seismundo@cit.edu): sophieanneka.seismundo@cit.edu
+- [Katrina Amores](https://github.com/katkatty21): katrina.amores@cit.edu
+- [Rey Christian Bacolod](https://github.com/rychfghg): reychristian.bacolod@cit.edu
 
-- PostgreSQL documentation: [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)
-- Django documentation: [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
-- Special thanks to the contributors of open-source tools used in this project.
 
 
-## Additional Resources 
+## 📚 Additional Resources
 
-- Functional Requirements Document: 
-- Gantt Chart:
-- Entity Relationship Diagram (ERD): 
+- [Functional Requirements Document](https://docs.google.com/document/d/1wRUX7TfamZ61ei4otYVEJMC07NCnUOh7NaZMVRlH61s/edit?tab=t.0)
+- [Gantt Chart:](https://docs.google.com/spreadsheets/d/100kTUpP4Sychp47k7l7S2iiFd9uNb3wG9xwUYE7GOIQ/edit?gid=0#gid=0)
+- [Entity Relationship Diagram](https://www.figma.com/board/mmlZjU6REvV2qqFbcbgqqv/Physical-ERD?node-id=2-485&node-type=table&t=r4o1MAyiJLQqJKMD-0)
+- [UI/UX](https://www.figma.com/design/KOYZs82m0yT8wV7tcVyIjb/HR-Management-System-UI-UX?node-id=0-1&node-type=canvas&t=gFdfWWqKWUHT7CSz-0)
 
+
+
+## 🙌 Acknowledgments
+
+- [Django Documentation](https://docs.djangoproject.com/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- Special thanks to the open-source community.
 
 
 
