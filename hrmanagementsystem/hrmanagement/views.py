@@ -527,3 +527,79 @@ def self_assessment_view(request):
         return redirect('user_home')
 
     return render(request, 'user/self_assessment.html', {'employee': employee})
+
+
+
+
+from .models import LeaveRequest
+
+
+@login_required(login_url='login')
+def leave_list(request):
+    # Handle status update
+    if request.method == 'POST':
+        leave_id = request.POST.get('leave_id')
+        new_status = request.POST.get('status')
+        try:
+            leave_request = LeaveRequest.objects.get(leave_id=leave_id)
+            leave_request.status = new_status
+            leave_request.save()
+            messages.success(request, f"Status for leave request {leave_id} updated successfully.")
+        except LeaveRequest.DoesNotExist:
+            messages.error(request, "Leave request not found.")
+    
+    # Fetch all leave requests
+    leave_requests = LeaveRequest.objects.select_related('employee', 'leave_type').order_by('-start_date')
+    context = {
+        'leave_requests': leave_requests,
+    }
+    return render(request, 'admin/admin_leave.html', context)
+
+
+from django.shortcuts import render
+from .models import SanctionReport, SelfAssessment, PeerFeedback, PerformanceReview
+
+def performance_management(request):
+    filter_type = request.GET.get('filter', '')
+    headers, records = [], []
+
+    if filter_type == 'sanction_reports':
+        headers = ['Sanction ID', 'Employee', 'Sanction Type', 'Sanction Date', 'Status', 'Actions']
+        records = SanctionReport.objects.all().values(
+            'sanction_id', 'employee__first_name', 'sanction_type', 'sanction_date', 'status'
+        )
+    elif filter_type == 'self_assessment':
+        headers = ['Assessment ID', 'Employee', 'Performance Rating', 'Skill Development', 'Teamwork',
+                   'Communication Skills', 'Company Culture', 'Work-Life Balance', 'Submitted At']
+        records = SelfAssessment.objects.all().values(
+            'self_assessment_id', 'employee__first_name', 'performance_rating', 'skill_development',
+            'teamwork', 'communication_skills', 'company_culture', 'work_life_balance', 'submitted_at'
+        )
+    elif filter_type == 'peer_feedback':
+        headers = ['Feedback ID', 'From User', 'To User', 'Created At']
+        records = PeerFeedback.objects.all().values(
+            'feedback_id', 'from_user__first_name', 'to_user__first_name', 'created_at'
+        )
+    elif filter_type == 'supervisor_feedback':
+        headers = ['Review ID', 'Employee', 'Review Date', 'Reviewer', 'Performance Score']
+        records = PerformanceReview.objects.all().values(
+            'review_id', 'employee__first_name', 'review_date', 'reviewer__first_name', 'performance_score'
+        )
+    else:
+        headers = ['Record Type', 'Details']  # Default view
+        records = []  # Handle no filter or default case
+
+    return render(request, 'admin/admin_performance_management.html', {
+        'headers': headers,
+        'records': records,
+        'filter': filter_type,
+    })
+
+from django.shortcuts import get_object_or_404, redirect
+
+def update_status(request, sanction_id):
+    if request.method == 'POST':
+        sanction = get_object_or_404(SanctionReport, sanction_id=sanction_id)
+        sanction.status = request.POST.get('status')
+        sanction.save()
+        return redirect('performance_management')

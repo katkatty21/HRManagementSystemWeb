@@ -10,6 +10,13 @@ urlpatterns = [
     path('hr/employee/clock-in/', views.user_clock_in, name='user_clock_in'),
     path('hr/employee/clock-out/', views.user_clock_out, name='user_clock_out'),
 
+    path('hr/admin/leave/', views.leave_list, name='leave_list'),
+    path('hr/admin/performance-management/', views.performance_management, name='performance_management'),
+    path('hr/admin/sanction/<uuid:sanction_id>/update-status/', views.update_status, name='update_status'),
+
+
+     ##user
+
 
     path('leave_request/', views.leave_request, name='leave_request'),
     path('attendance-record/', views.attendance_record, name='attendance_record'),
