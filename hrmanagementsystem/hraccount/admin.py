@@ -32,35 +32,9 @@ class JobAdmin(admin.ModelAdmin):
 # EmployeeInformation Admin
 @admin.register(EmployeeInformation)
 class EmployeeInformationAdmin(admin.ModelAdmin):
-    list_display = (
-        'profile_picture_preview',  # Added profile picture preview
-        'first_name', 
-        'last_name', 
-        'email', 
-        'sex', 
-        'marital_status', 
-        'nationality', 
-        'city', 
-        'employment_status', 
-        'job'
-    ) 
-    search_fields = (
-        'first_name', 
-        'last_name', 
-        'email', 
-        'nationality', 
-        'city', 
-        'employment_status', 
-        'job__job_title'
-    )  # Searchable fields
-    list_filter = ('sex', 'marital_status', 'job')  # Filterable fields
-    ordering = ('last_name', 'first_name')  # Default ordering
-    list_display_links = ('first_name',)  # Make 'first_name' clickable to access the detail view
-    readonly_fields = ('email',)  # Readonly email field (derived from UserAccount)
-
-    # Method to display profile picture preview
-    def profile_picture_preview(self, obj):
-        if obj.profile_picture:
-            return mark_safe(f'<img src="{obj.profile_picture.url}" alt="Profile Picture" width="50px" height="50px" />')
-        return "No Image"
-    profile_picture_preview.short_description = 'Profile Picture'  # Custom label for the column
+    list_display = ('profile_preview', 'first_name', 'last_name', 'sex', 'address', 'city', 'province', 'zip_code', 'job', 'date_hired')
+    list_display_links = ('first_name', 'last_name')
+    search_fields = ('first_name', 'last_name', 'email', 'job__job_title')
+    list_filter = ('sex', 'marital_status', 'employment_status')
+    ordering = ('last_name', 'first_name')
+    readonly_fields = ("profile_preview",'email')

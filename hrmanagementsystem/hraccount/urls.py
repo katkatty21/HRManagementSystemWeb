@@ -17,7 +17,10 @@ urlpatterns = [
     path('hr/admin/jobs/', views.jobs, name='jobs'),
     path('hr/admin/edit_job/<uuid:job_id>/', views.edit_job, name='edit_job'),
     path('hr/admin/delete_job/<uuid:job_id>/', views.delete_job, name='delete_job'),
+    path('hr/admin/employees/', views.employee_list, name='employee_list'),
+    path('hr/admin/employees/add/', views.add_employee, name='add_employee'),
+    path('hr/admin/employees/edit/<uuid:employee_id>/', views.edit_employee, name='edit_employee'),
+    path('hr/admin/employees/delete/<uuid:employee_id>/', views.delete_employee, name='delete_employee'),
     
-
     path('hr/user/home/', views.user_home, name='user_home'),
 ]

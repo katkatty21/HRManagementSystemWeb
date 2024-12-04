@@ -6,6 +6,7 @@ from django.utils.timezone import now, localtime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib import messages
+from django.db import transaction
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
@@ -16,10 +17,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.db import IntegrityError
 from .models import UserAccount, Department, Job, EmployeeInformation
-from .forms import DepartmentForm, JobForm
-
-
-
+from .forms import DepartmentForm, JobForm, EmployeeForm
 
 def index(request):
     if request.method == "POST":
@@ -303,3 +301,123 @@ def delete_job(request, job_id):
 
     return render(request, 'admin/job_delete_confirmation.html', {'job': job})
 
+
+@login_required(login_url='login')
+def employee_list(request):
+    employees = EmployeeInformation.objects.all()  # Get all employees
+    return render(request, 'admin/employees.html', {'employees': employees})
+
+@login_required(login_url='login')
+def add_employee(request):
+    jobs = Job.objects.all() 
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Save UserAccount data first
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+            user = UserAccount.objects.create_user(
+                username=email, email=email, first_name=first_name, last_name=last_name
+            )
+            user.save()
+
+            # Create EmployeeInformation
+            employee = form.save(commit=False)
+            employee.employee_id = user  # Link to UserAccount
+            employee.save()
+
+            messages.success(request, "Employee added successfully!")
+            return redirect('employee_list')
+    else:
+        form = EmployeeForm()
+    return render(request, 'admin/add_employee.html', {'form': form, jobs:jobs})
+
+@login_required(login_url='login')
+def edit_employee(request, employee_id):
+    employee = get_object_or_404(EmployeeInformation, employee_id=employee_id)
+    user = employee.employee_id
+
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                # Update basic information
+                employee.first_name = request.POST.get('first_name')
+                employee.last_name = request.POST.get('last_name')
+                employee.middle_name = request.POST.get('middle_name')
+                employee.sex = request.POST.get('sex')
+                employee.marital_status = request.POST.get('marital_status')
+                employee.nationality = request.POST.get('nationality')
+                employee.address = request.POST.get('address')
+                employee.city = request.POST.get('city')
+                employee.province = request.POST.get('province')
+                employee.zip_code = request.POST.get('zip_code')
+                employee.active_phone_number = request.POST.get('active_phone_number')
+                employee.email = request.POST.get('email')
+                employee.date_hired = request.POST.get('date_hired')
+                employee.employment_status = request.POST.get('employment_status')
+                
+                # Update government numbers
+                employee.sss_number = request.POST.get('sss_number')
+                employee.pagibig_number = request.POST.get('pagibig_number')
+                employee.philhealth_number = request.POST.get('philhealth_number')
+                employee.tin_number = request.POST.get('tin_number')
+                employee.bank_account_number = request.POST.get('bank_account_number')
+                
+                # Update emergency contact
+                employee.emergency_contact_name = request.POST.get('emergency_contact_name')
+                employee.emergency_contact_rs = request.POST.get('emergency_contact_rs')
+                employee.emergency_contact_number = request.POST.get('emergency_contact_number')
+                
+                # Update job if changed
+                job_id = request.POST.get('job')
+                if job_id:
+                    job = Job.objects.get(job_id=job_id)
+                    employee.job = job
+
+                # Handle profile picture
+                if 'profile_picture' in request.FILES:
+                    if employee.profile_picture:
+                        employee.profile_picture.delete(save=False)
+                    employee.profile_picture = request.FILES['profile_picture']
+
+                # Save EmployeeInformation
+                employee.save()
+
+                # Update UserAccount
+                user.first_name = employee.first_name
+                user.last_name = employee.last_name
+                user.email = employee.email
+                user.username = employee.email
+                user.save()
+
+                messages.success(request, "Employee information updated successfully!")
+                return redirect('employee_list')
+
+        except Exception as e:
+            messages.error(request, f"Error updating employee information: {str(e)}")
+            form = EmployeeForm(instance=employee)
+            return render(request, 'admin/edit_employee.html', {
+                'form': form,
+                'employee': employee,
+                'error': str(e)
+            })
+    else:
+        form = EmployeeForm(instance=employee)
+
+    return render(request, 'admin/edit_employee.html', {
+        'form': form,
+        'employee': employee
+    })
+
+@login_required(login_url='login')
+def delete_employee(request, employee_id):
+    employee = get_object_or_404(EmployeeInformation, employee_id=employee_id)
+    user = employee.employee_id  # Access the related UserAccount
+
+    # Delete EmployeeInformation and UserAccount
+    employee.delete()
+    user.delete()
+
+    messages.success(request, "Employee deleted successfully!")
+    return redirect('employee_list')

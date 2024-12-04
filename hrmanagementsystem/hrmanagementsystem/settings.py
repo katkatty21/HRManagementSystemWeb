@@ -148,3 +148,4 @@ EMAIL_USE_TLS = True  # Enable TLS
 EMAIL_HOST_USER = 'katamores2104@gmail.com'  # Your Gmail address
 EMAIL_HOST_PASSWORD = 'jvje xfjm plul pels'  # Your app password (16 characters generated above)
 DEFAULT_FROM_EMAIL = 'katamores2104@gmail.com'  # Default from email for sending emails
+
