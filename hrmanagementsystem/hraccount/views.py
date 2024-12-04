@@ -309,34 +309,68 @@ def employee_list(request):
 
 @login_required(login_url='login')
 def add_employee(request):
-    jobs = Job.objects.all() 
+    jobs = Job.objects.all()
+    users = UserAccount.objects.filter(employee_information__isnull=True)
+    
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Save UserAccount data first
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            email = form.cleaned_data['email']
-            user = UserAccount.objects.create_user(
-                username=email, email=email, first_name=first_name, last_name=last_name
-            )
-            user.save()
+        try:
+            with transaction.atomic():
+                user = UserAccount.objects.get(account_id=request.POST.get('user_account'))
+                
+                employee = EmployeeInformation(
+                    employee_id=user,
+                    job=Job.objects.get(job_id=request.POST.get('job')),
+                    email=user.email,
+                    first_name=request.POST.get('first_name'),
+                    middle_name=request.POST.get('middle_name'),
+                    last_name=request.POST.get('last_name'),  # This was incorrectly named in template
+                    sex=request.POST.get('sex'),
+                    marital_status=request.POST.get('marital_status'),
+                    nationality=request.POST.get('nationality'),
+                    address=request.POST.get('address'),
+                    city=request.POST.get('city'),
+                    province=request.POST.get('province'),
+                    zip_code=request.POST.get('zip_code'),
+                    active_phone_number=request.POST.get('active_phone_number', ''),  # Add default value
+                    sss_number=request.POST.get('sss_number'),
+                    pagibig_number=request.POST.get('pagibig_number'),
+                    philhealth_number=request.POST.get('philhealth_number'),
+                    tin_number=request.POST.get('tin_number'),
+                    bank_account_number=request.POST.get('bank_account_number'),
+                    emergency_contact_name=request.POST.get('emergency_contact_name'),
+                    emergency_contact_rs=request.POST.get('emergency_contact_rs'),
+                    emergency_contact_number=request.POST.get('emergency_contact_number'),
+                    date_hired=timezone.now().date(),  # Set default date
+                    employment_status='Active'  # Set default status
+                )
 
-            # Create EmployeeInformation
-            employee = form.save(commit=False)
-            employee.employee_id = user  # Link to UserAccount
-            employee.save()
-
-            messages.success(request, "Employee added successfully!")
-            return redirect('employee_list')
-    else:
-        form = EmployeeForm()
-    return render(request, 'admin/add_employee.html', {'form': form, jobs:jobs})
+                # Handle profile picture
+                if 'profile_picture' in request.FILES:
+                    employee.profile_picture = request.FILES['profile_picture']
+                
+                employee.save()
+                
+                messages.success(request, "Employee added successfully!")
+                return redirect('employee_list')
+                
+        except UserAccount.DoesNotExist:
+            messages.error(request, "Selected user account not found.")
+        except Job.DoesNotExist:
+            messages.error(request, "Selected job not found.")
+        except Exception as e:
+            messages.error(request, f"Error adding employee: {str(e)}")
+            print(e)  # For debugging
+    
+    return render(request, 'admin/add_employee.html', {
+        'jobs': jobs,
+        'users': users
+    })
 
 @login_required(login_url='login')
 def edit_employee(request, employee_id):
     employee = get_object_or_404(EmployeeInformation, employee_id=employee_id)
     user = employee.employee_id
+    jobs = Job.objects.all()
 
     if request.method == 'POST':
         try:
@@ -407,7 +441,8 @@ def edit_employee(request, employee_id):
 
     return render(request, 'admin/edit_employee.html', {
         'form': form,
-        'employee': employee
+        'employee': employee,
+         'jobs': jobs
     })
 
 @login_required(login_url='login')

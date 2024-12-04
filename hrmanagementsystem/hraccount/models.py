@@ -112,8 +112,9 @@ class EmployeeInformation(models.Model):
 
     def profile_preview(self):
         """
-        Display profile picture as an HTML image tag in admin or frontend.
+        Display profile picture as an HTML image tag.
         """
         if self.profile_picture:
-            return mark_safe(f'<img src="{self.profile_picture.url}" alt="Profile Picture" width="50px" height="50px" style="border-radius: 50%;"/>')
-        return mark_safe('<span>No profile picture</span>')
+            # If profile picture exists, return the HTML image tag
+            return mark_safe(f'<img src="{self.profile_picture.url}" width="50" height="50" />')
+        return "No Profile Picture"  # If no profile picture, return a placeholder text

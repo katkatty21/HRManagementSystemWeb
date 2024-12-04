@@ -9,11 +9,9 @@
         </a>
     </div>
     
-
     <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Add New Employee</h2>
 
-        <!-- Success or Error Message -->
         {% if messages %}
             {% for message in messages %}
                 <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-md">
@@ -22,17 +20,38 @@
             {% endfor %}
         {% endif %}
 
-        <form method="post" class="space-y-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
 
             <div class="grid grid-cols-1 sm:grid-cols-1 gap-6">
                 <div class="mb-4">
-                    <label for="profile_picture" class="block text-sm font-semibold text-gray-700">Profile Photo</label>
-                    <input type="text" name="first_name" id="first_name" value="{{ form.first_name.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                    <label for="user_account" class="block text-gray-700 font-medium mb-2">User Account</label>
+                    <select name="user_account" id="user_account" class="w-full px-3 py-2 border rounded-lg" required>
+                        <option value="">Select User</option>
+                        {% for user in users %}
+                            <option value="{{ user.account_id }}">{{ user.email }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-
             </div>
-            
+    
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="mb-4">
+                    <label for="profile_picture" class="block text-sm font-semibold text-gray-700">Profile Photo</label>
+                    <input type="file" name="profile_picture" id="profile_picture" value="{{ form.profile_picture.value}}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+                <div class="mb-4">
+                    <label for="job" class="block text-sm font-semibold text-gray-700">Job Description</label>
+                    <select name="job" id="job" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" disabled selected>Select Job</option>
+                        {% for job in jobs %}
+                        <option value="{{ job.job_id }}" {% if form.job.value == job.job_id %}selected{% endif %}>
+                            {{ job.job_title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div class="mb-4">
@@ -47,102 +66,168 @@
 
                 <div class="mb-4">
                     <label for="last_name" class="block text-sm font-semibold text-gray-700">Last Name</label>
-                    <input type="text" name="first_name" id="first_name" value="{{ form.first_name.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                    <input type="text" name="last_name" id="last_name" value="{{ form.last_name.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="mb-4">
+                    <label for="date_hired" class="block text-sm font-semibold text-gray-700">Date Hired</label>
+                    <input type="date" name="date_hired" id="date_hired" value="{{ form.date_hired.value|date:'Y-m-d'|default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+                <div class="mb-4">
+                    <label for="employment_status" class="block text-sm font-semibold text-gray-700">Employment Status</label>
+                    <input type="text" name="employment_status" id="employment_status" value="Active" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="mb-4">
+                    <label for="id_sex" class="block text-sm font-semibold text-gray-700">Sex</label>
+                    <select name="sex" id="id_sex" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" disabled {% if form.sex.value == '' %}selected{% endif %}>Select Sex</option>
+                        <option value="Female" {% if form.sex.value == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Male" {% if form.sex.value == 'Male' %}selected{% endif %}>Male</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_marital" class="block text-sm font-semibold text-gray-700">Marital Status</label>
+                    <select name="marital_status" id="id_marital" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" disabled {% if form.sex.value == '' %}selected{% endif %}>Select Status</option>
+                        <option value="Single" {% if form.marital_status.value == 'Single' %}selected{% endif %}>Single</option>
+                        <option value="Married" {% if form.marital_status.value == 'Married' %}selected{% endif %}>Married</option>
+                        <option value="Widowed" {% if form.marital_status.value == 'Widowed' %}selected{% endif %}>Widowed</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="nationality" class="block text-sm font-semibold text-gray-700">Nationality</label>
+                    <input type="text" name="nationality" id="nationality" value="{{ form.nationality.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="mb-4">
+                    <label for="address" class="block text-sm font-semibold text-gray-700">Address</label>
+                    <input type="text" name="address" id="address" value="{{ form.address.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+                <div class="mb-4">
+                    <label for="active_phone_number" class="block text-sm font-semibold text-gray-700">Phone Number</label>
+                    <input type="text" name="active_phone_number" id="active_phone_number" value="{{ form.active_phone_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
                 </div>
             </div>
             
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="mb-4">
+                    <label for="city" class="block text-sm font-semibold text-gray-700">City</label>
+                    <input type="text" name="city" id="city" value="{{ form.city.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
             
-
-            <!-- Email and Profile Picture -->
+                <div class="mb-4">
+                    <label for="province" class="block text-sm font-semibold text-gray-700">Province</label>
+                    <input type="text" name="province" id="province" value="{{ form.province.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            
+                <div class="mb-4">
+                    <label for="zip_code" class="block text-sm font-semibold text-gray-700">Zip Code</label>
+                    <input type="text" name="zip_code" id="zip_code" value="{{ form.zip_code.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="mb-4">
+                    <label for="sss_number" class="block text-sm font-semibold text-gray-700">SSS Number</label>
+                    <input type="text" name="sss_number" id="sss_number" value="{{ form.sss_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            
+                <div class="mb-4">
+                    <label for="pagibig_number" class="block text-sm font-semibold text-gray-700">PAGIBIG Number</label>
+                    <input type="text" name="pagibig_number" id="pagibig_number" value="{{ form.pagibig_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            
+                <div class="mb-4">
+                    <label for="philhealth_number" class="block text-sm font-semibold text-gray-700">PhilHealth Number</label>
+                    <input type="text" name="philhealth_number" id="philhealth_number" value="{{ form.philhealth_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            </div>
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- Email -->
-                <div>
-                    <label for="id_email" class="block text-sm font-medium text-gray-700">Email</label>
-                    {{ form.email }}
+                <div class="mb-4">
+                    <label for="tin_number" class="block text-sm font-semibold text-gray-700">TIN Number</label>
+                    <input type="text" name="tin_number" id="tin_number" value="{{ form.tin_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
                 </div>
-
-                <!-- Profile Picture -->
-                <div>
-                    <label for="id_profile_picture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
-                    {{ form.profile_picture }}
+            
+                <div class="mb-4">
+                    <label for="bank_account_number" class="block text-sm font-semibold text-gray-700">Bank Account Number</label>
+                    <input type="text" name="bank_account_number" id="bank_account_number" value="{{ form.bank_account_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="mb-4">
+                    <label for="emergency_contact_name" class="block text-sm font-semibold text-gray-700">Emergency Contact Name</label>
+                    <input type="text" name="emergency_contact_name" id="emergency_contact_name" value="{{ form.emergency_contact_name.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            
+                <div class="mb-4">
+                    <label for="emergency_contact_rs" class="block text-sm font-semibold text-gray-700">Emergency Contact Relationship</label>
+                    <input type="text" name="emergency_contact_rs" id="emergency_contact_rs" value="{{ form.emergency_contact_rs.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
+                </div>
+            
+                <div class="mb-4">
+                    <label for="emergency_contact_number" class="block text-sm font-semibold text-gray-700">Emergency Contact Number</label>
+                    <input type="text" name="emergency_contact_number" id="emergency_contact_number" value="{{ form.emergency_contact_number.value | default:'' }}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2" required>
                 </div>
             </div>
 
-            <!-- Job Field (Dropdown from jobs) -->
-            <div>
-                <label for="id_job" class="block text-sm font-medium text-gray-700">Job</label>
-                <select name="job" id="id_job" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="" disabled selected>Select Job</option>
-                    {% for job in jobs %}
-                        <option value="{{ job.id }}" {% if form.job.value == job.id %}selected{% endif %}>{{ job.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+         
 
-            <!-- Other Fields -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- Sex -->
-                <div>
-                    <label for="id_sex" class="block text-sm font-medium text-gray-700">Sex</label>
-                    {{ form.sex }}
-                </div>
-
-                <!-- Marital Status -->
-                <div>
-                    <label for="id_marital_status" class="block text-sm font-medium text-gray-700">Marital Status</label>
-                    {{ form.marital_status }}
-                </div>
-            </div>
-
-            <!-- Address and Contact Information -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- Nationality -->
-                <div>
-                    <label for="id_nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
-                    {{ form.nationality }}
-                </div>
-
-                <!-- Address -->
-                <div>
-                    <label for="id_address" class="block text-sm font-medium text-gray-700">Address</label>
-                    {{ form.address }}
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- City -->
-                <div>
-                    <label for="id_city" class="block text-sm font-medium text-gray-700">City</label>
-                    {{ form.city }}
-                </div>
-
-                <!-- Province -->
-                <div>
-                    <label for="id_province" class="block text-sm font-medium text-gray-700">Province</label>
-                    {{ form.province }}
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <!-- Zip Code -->
-                <div>
-                    <label for="id_zip_code" class="block text-sm font-medium text-gray-700">Zip Code</label>
-                    {{ form.zip_code }}
-                </div>
-
-                <!-- Emergency Contact Number -->
-                <div>
-                    <label for="id_emergency_contact_number" class="block text-sm font-medium text-gray-700">Emergency Contact Number</label>
-                    {{ form.emergency_contact_number }}
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="flex justify-center">
-                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                    Save Employee
-                </button>
+            <div class="flex justify-end">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save Employee</button>
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function formatInput(input, pattern) {
+                input.addEventListener('input', function(e) {
+                    let value = this.value.replace(/\D/g, '');
+                    
+                    let formatted = '';
+                    let currentPosition = 0;
+                    
+                    for(let i = 0; i < pattern.length && currentPosition < value.length; i++) {
+                        if(pattern[i] === '_') {
+                            formatted += value[currentPosition];
+                            currentPosition++;
+                        } else {
+                            formatted += pattern[i];
+                        }
+                    }
+                    
+                    this.value = formatted;
+                });
+            }
+        
+            formatInput(document.getElementById('sss_number'), '__  _______  _');
+            formatInput(document.getElementById('pagibig_number'), '____  ____  ____');
+            formatInput(document.getElementById('philhealth_number'), '____  ____  ____');
+            formatInput(document.getElementById('tin_number'), '___  ___  ___');
+            formatInput(document.getElementById('bank_account_number'), '___  ___  ___  ___');
+            
+            const phoneInput = document.getElementById('active_phone_number');
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 0 && value[0] !== '0') {
+                    value = '0' + value;
+                }
+                if (value.length > 11) {
+                    value = value.substr(0, 11);
+                }
+                this.value = value;
+            });
+        });
+        </script>
 {% endblock %}
