@@ -78,6 +78,8 @@ def generate_password():
 
 @login_required(login_url='login')
 def add_user(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     # Generate the password immediately when the page loads
     generated_password = generate_password()
 
@@ -205,12 +207,16 @@ def logout_view(request):
 # List Departments
 @login_required(login_url='login')
 def department_list(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     departments = Department.objects.all()
     return render(request, 'admin/departments.html', {'departments': departments})
 
 # Add New Department
 @login_required(login_url='login')
 def add_department(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     if request.method == 'POST':
         form = DepartmentForm(request.POST)
         if form.is_valid():
@@ -226,6 +232,8 @@ def add_department(request):
 # Edit Department
 @login_required(login_url='login')
 def edit_department(request, department_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.") 
     department = get_object_or_404(Department, department_id=department_id)
     if request.method == 'POST':
         form = DepartmentForm(request.POST, instance=department)
@@ -242,6 +250,8 @@ def edit_department(request, department_id):
 # Delete Department
 @login_required(login_url='login')
 def delete_department(request, department_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     department = get_object_or_404(Department, department_id=department_id)
     try:
         department.delete()
@@ -253,12 +263,16 @@ def delete_department(request, department_id):
 # List all jobs
 @login_required(login_url='login')
 def jobs(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     jobs = Job.objects.all()
     return render(request, 'admin/jobs.html', {'jobs': jobs})
     
 # Add a new job
 @login_required(login_url='login')
 def add_job(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     departments = Department.objects.all()
     if request.method == 'POST':
         form = JobForm(request.POST)
@@ -275,6 +289,8 @@ def add_job(request):
 # View for editing an existing job
 @login_required(login_url='login')
 def edit_job(request, job_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     job = get_object_or_404(Job, job_id=job_id)
     departments = Department.objects.all()
     if request.method == 'POST':
@@ -293,6 +309,8 @@ def edit_job(request, job_id):
 # Delete a job (with confirmation)
 @login_required(login_url='login')
 def delete_job(request, job_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     job = get_object_or_404(Job, job_id=job_id)
 
     if request.method == 'POST':
@@ -304,11 +322,15 @@ def delete_job(request, job_id):
 
 @login_required(login_url='login')
 def employee_list(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     employees = EmployeeInformation.objects.all()  # Get all employees
     return render(request, 'admin/employees.html', {'employees': employees})
 
 @login_required(login_url='login')
 def add_employee(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     jobs = Job.objects.all()
     users = UserAccount.objects.filter(employee_information__isnull=True)
     
@@ -368,6 +390,8 @@ def add_employee(request):
 
 @login_required(login_url='login')
 def edit_employee(request, employee_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     employee = get_object_or_404(EmployeeInformation, employee_id=employee_id)
     user = employee.employee_id
     jobs = Job.objects.all()
@@ -447,6 +471,8 @@ def edit_employee(request, employee_id):
 
 @login_required(login_url='login')
 def delete_employee(request, employee_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     employee = get_object_or_404(EmployeeInformation, employee_id=employee_id)
     user = employee.employee_id  # Access the related UserAccount
 

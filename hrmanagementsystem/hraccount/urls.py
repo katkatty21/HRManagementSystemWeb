@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -23,4 +23,5 @@ urlpatterns = [
     path('hr/admin/employees/delete/<uuid:employee_id>/', views.delete_employee, name='delete_employee'),
     
     path('hr/user/home/', views.user_home, name='user_home'),
+    path('hrmanagement/', include('hrmanagement.urls')),
 ]

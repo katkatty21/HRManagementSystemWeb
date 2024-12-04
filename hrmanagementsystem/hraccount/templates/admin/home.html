@@ -4,6 +4,99 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
+<div class="mb-8">{% if messages %}
+    {% for message in messages %}
+        <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+        <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+  </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    {% if messages %}
+    {% for message in messages %}
+    <div
+      class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+      <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+  
+    <!-- Clock In Card -->
+    <form id="clock-in-form" method="POST" action="{% url 'admin_clock_in' %}">
+      {% csrf_token %}
+      <button id="clock-in-button" type="submit"
+        class="w-full bg-white rounded-xl shadow-sm border-2 border-green-200 p-6 hover:shadow-md transition-all duration-300 hover:scale-105 hover:border-green-300"
+        {% if is_clocked_in %}disabled{% endif %}>
+        <div class="flex flex-col items-center justify-center space-y-4">
+          <div class="bg-green-100 p-4 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-green-600">Clock In</h3>
+        </div>
+      </button>
+    </form>
+
+    <!-- Clock Out Card -->
+    <form id="clock-out-form" method="POST" action="{% url 'admin_clock_out' %}">
+    {% csrf_token %}
+      <button id="clock-out-button" type="submit"
+        class="w-full bg-white rounded-xl shadow-sm border-2 border-red-200 p-6 hover:shadow-md transition-all duration-300 hover:scale-105 hover:border-red-300"
+        {% if not is_clocked_in %}disabled{% endif %}>
+        <div class="flex flex-col items-center justify-center space-y-4">
+          <div class="bg-red-100 p-4 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-red-600">Clock Out</h3>
+        </div>
+      </button>
+    </form>
+  </div>
+
+  <!-- Time Tracking Card - Full Width -->
+  <div class="w-full mb-8">
+    <div class="bg-white rounded-xl shadow-sm border-2 border-blue-200 p-8">
+      <div class="flex flex-col items-center space-y-6">
+        <div class="flex items-center justify-center bg-blue-100 p-4 rounded-full w-16">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="text-center space-y-4">
+          <h3 class="text-2xl font-bold text-gray-800">Time Tracking</h3>
+          <p class="text-gray-600">Keep track of your attendance</p>
+
+          <!-- Time Information with Larger Text -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+            <div class="text-center">
+              <p class="text-lg font-medium text-gray-600 mb-2">Date</p>
+              <p class="text-xl font-semibold text-gray-800" id="current-date"></p>
+            </div>
+            <div class="text-center">
+              <p class="text-lg font-medium text-gray-600 mb-2">Current Time</p>
+              <p class="text-xl font-semibold text-gray-800" id="current-time">00:00:00</p>
+            </div>
+            <div class="text-center">
+              <p class="text-lg font-medium text-gray-600 mb-2">Elapsed Time</p>
+              <p class="text-3xl font-bold text-blue-600" id="elapsed-time">0:00:00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <!-- Card 1: User Management -->
     <div class="bg-white shadow-lg rounded-lg p-6">
@@ -50,4 +143,107 @@
         </div>
     </div>
 </div>
+
+<script>
+    let clockInTime = null;
+    let timerInterval = null;
+
+    const PH_TZ_OFFSET = 8 * 60 * 60 * 1000;
+
+    function formatTime(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Manila'
+      }).format(date);
+    }
+
+    function formatDate(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'Asia/Manila'
+      }).format(date);
+    }
+
+    function updateCurrentTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = formatTime(now);
+      document.getElementById('current-date').textContent = formatDate(now);
+    }
+
+    function updateElapsedTime() {
+      if (!clockInTime) return;
+
+      const now = new Date();
+      const elapsedMs = now - clockInTime;
+
+      const hours = Math.floor(elapsedMs / (1000 * 60 * 60));
+      const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+
+      document.getElementById('elapsed-time').textContent = `${hours}:${minutes
+        .toString()
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+
+    function disableClockInButton() {
+      const clockInButton = document.getElementById('clock-in-button');
+      clockInButton.disabled = true;
+      clockInButton.classList.add('bg-gray-200', 'cursor-not-allowed');
+    }
+
+    function startHourCounter() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateElapsedTime();
+      timerInterval = setInterval(updateElapsedTime, 1000);
+    }
+
+    // Stop Hour Counter
+    function stopHourCounter() {
+      if (timerInterval) clearInterval(timerInterval);
+      document.getElementById('elapsed-time').textContent = '0:00:00';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCurrentTime();
+      setInterval(updateCurrentTime, 1000);
+
+      const savedClockInTime = localStorage.getItem('clockInTime');
+      if (savedClockInTime) {
+        clockInTime = new Date(savedClockInTime);
+        if (!isNaN(clockInTime)) {
+          disableClockInButton();
+          document.getElementById('clock-out-button').disabled = false;
+          startHourCounter();
+        } else {
+          localStorage.removeItem('clockInTime');
+        }
+      }
+      document.getElementById('clock-in-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const now = new Date();
+        clockInTime = now;
+        localStorage.setItem('clockInTime', now.toISOString());
+        document.getElementById('clock-in-button').disabled = true;
+        document.getElementById('clock-out-button').disabled = false;
+        startHourCounter();
+        this.submit();
+      });
+
+      document.getElementById('clock-out-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        stopHourCounter();
+        clockInTime = null;
+        localStorage.removeItem('clockInTime');
+        document.getElementById('clock-in-button').disabled = false;
+        document.getElementById('clock-out-button').disabled = true;
+        this.submit();
+      });
+    });
+  </script>
 {% endblock %}

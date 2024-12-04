@@ -13,9 +13,33 @@
             color: #1d4ed8;
             background-color: #e0f2fe;
         }
+        
+        @media (max-width: 768px) {
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 15;
+            }
+            
+            .overlay.show {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-b from-blue-200 to-gray-100">
+    <!-- Overlay for mobile -->
+    <div id="sidebar-overlay" class="overlay"></div>
+
     <!-- Admin Navbar -->
     <nav class="fixed top-0 left-0 right-0 bg-white shadow-lg z-30">
         <div class="px-4 h-16 flex justify-between items-center">
@@ -76,6 +100,10 @@
                     <i class="fas fa-user-tie w-5 h-5 mr-3"></i>
                     <span class="font-medium">Employees</span>
                 </a>
+                <a href="{% url 'attendance_list' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-user-clock w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Attendance</span>
+                </a>
                 <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
                     <i class="fas fa-calendar-day w-5 h-5 mr-3"></i>
                     <span class="font-medium">Leave Management</span>
@@ -92,6 +120,10 @@
                     <i class="fas fa-graduation-cap w-5 h-5 mr-3"></i>
                     <span class="font-medium">Trainings</span>
                 </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-user-plus w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Recruitment</span>
+                </a>
             </nav>
         </div>
     </aside>
@@ -106,7 +138,6 @@
         </div>
     {% endif %}
 
-
     <!-- Main Content -->
     <main class="ml-0 md:ml-64 pt-16 min-h-screen transition-all duration-300">
         <div class="p-6">
@@ -115,8 +146,42 @@
     </main>
 
     <script>
+        // Profile dropdown toggle
         document.getElementById("profile-menu-button").addEventListener("click", function () {
             document.getElementById("profile-dropdown").classList.toggle("hidden");
+        });
+
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebar-overlay");
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle("open");
+            overlay.classList.toggle("show");
+        }
+
+        mobileMenuButton.addEventListener("click", toggleMobileMenu);
+        overlay.addEventListener("click", toggleMobileMenu);
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener("click", function(event) {
+            if (window.innerWidth < 768) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickInsideButton = mobileMenuButton.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickInsideButton && sidebar.classList.contains("open")) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", function() {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            }
         });
     </script>
 </body>

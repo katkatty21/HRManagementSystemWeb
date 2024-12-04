@@ -105,6 +105,9 @@ class EmployeeInformation(models.Model):
     emergency_contact_number = models.CharField(max_length=20)
     job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name="employee_jobs")
 
+    def __str__(self):
+        return f"{self.email}"
+
     def save(self, *args, **kwargs):
         if self.employee_id:
             self.email = self.employee_id.email  # Ensure email is synced from UserAccount
@@ -118,3 +121,4 @@ class EmployeeInformation(models.Model):
             # If profile picture exists, return the HTML image tag
             return mark_safe(f'<img src="{self.profile_picture.url}" width="50" height="50" />')
         return "No Profile Picture"  # If no profile picture, return a placeholder text
+     
