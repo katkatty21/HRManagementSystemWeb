@@ -142,8 +142,7 @@ Key features include:
 - Start the PostgreSQL service and ensure it is running.
 - Use `pgAdmin` for database management and to execute SQL queries if needed.
 - Run `python manage.py makemigrations` and `python manage.py migrate` in your Django project to apply model changes to the database.
-- Interact with the database via Django ORM for CRUD operations.
-
+- Implement database interactions using Django ORM and design a user-friendly interface for performing CRUD operations. Utilize Tailwind CSS to ensure responsive and visually appealing design.
 
 
 ## Contact 
