@@ -1,20 +1,14 @@
-
+<!-- PROJECT LOGO -->
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/c56ec18e-af4d-42a2-8def-772cbefbb604" alt="logo" width="200">
-    <h1>HR Management System</h1>
-    <p><i>Your one-stop solution for seamless HR operations</i></p>
-    <img src="https://img.shields.io/badge/License-MIT-blue" alt="License Badge">
-    <img src="https://img.shields.io/badge/Python-3.x-brightgreen" alt="Python Badge">
-    <img src="https://img.shields.io/badge/Django-4.x-orange" alt="Django Badge">
+    <img src="https://github.com/user-attachments/assets/c56ec18e-af4d-42a2-8def-772cbefbb604" alt="logoText">
+    <h3>HR Management System READ ME</h3>
 </div>
-
 <details>
   <summary>Table of Contents</summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#key-features">Key Features</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -27,10 +21,11 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#additional-resources">Additional Resources</a></li>
+     <li><a href="#additional-resources">Additional Resources</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
+
 
 
 
