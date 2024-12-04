@@ -45,26 +45,131 @@ Key features include:
 --Don't use previous project
 --Commit through branch
 
-#StartUP
----IN VSCode Powershell / Cmd 1. direct to your folder 2. Make sure virtual environment is installed
-python -m pip install virtualenv
-py -m pip install virtualenv 3. Create the environment
-virtualenv myenv 4. Activate
-VS Code : myenv\Scripts\activate (mas better for github purposes)
-cmd: .\myenv\Scripts\activate 5. Should have (myenv) on the left side 6. Install Django
-pip install django 7. Create Project
-django-admin startproject projectname 8. Create app
-cd projectname
-django-adin startapp appname 9. Continuation through .py files
-!!! Make sure to check directories and file arrangements
 
-#UI
-CSS Framework: Tailwind CSS
-##Installation Instructions 1. In settings.py, INSTALLED_APPS - add 'tailwind', 2. In Powershell (myenv) - python -m pip install django-tailwind - cd to project then python manage.py tailwind init - app_name[theme]? type "theme" - add 'theme' and django_browser_reload on INSTALLED_APPS in setting.py - pip install django-browser-reload 3. Settings.py - Add code line TAILWIND_APP_NAME = 'theme' - Add INTERNAL_IPS = ["127.0.0.1",] 4. MIDDLEWARE
--add to the last "django_browser_reload.middleware.BrowserReloadMiddleware", 5. In projects urls.py
--add path("**reload**/", include("django_browser_reload.urls")), 6. python managge.py tailwind start
+## Built With
+The HR Management System is a comprehensive platform designed to streamline and optimize the core functions of Human Resources. Built to simplify processes like employee data management, attendance tracking, payroll processing, performance evaluations, and recruitment, this system serves as an all-in-one solution for HR departments of any size. By centralizing data and automating repetitive tasks, it reduces administrative workload and helps HR teams focus on strategic activities, such as talent development and employee engagement.
 
-https://www.youtube.com/watch?v=GepQBpHNgrk
+Key features include:
+
+- Employee Profiles: Centralized database for managing employee records and personal information.
+- Attendance Tracking: Efficient tracking of attendance, leave, and absences, providing transparency and accountability.
+- Payroll Management: Automated calculations, deductions, and payments with secure storage and accessibility
+- Performance Feedback: Tools to facilitate continuous performance tracking, goal-setting, and reviews.
+- Recruitment: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
+- Reporting and Analytics: Real-time insights into HR data to support decision-making and compliance.
+
+#Reminders
+--Don't use previous project
+--Commit through branch
+
+## Getting Started
+
+1. **Direct to your folder**
+   - Open your terminal or command prompt.
+   - Navigate to the folder where you want to set up your Django project.
+
+2. **Ensure virtual environment is installed**
+   - Run the following commands to install virtualenv if not already installed:
+     ```bash
+     python -m pip install virtualenv
+     py -m pip install virtualenv
+     ```
+
+3. **Create the environment**
+   - Run:
+     ```bash
+     virtualenv myenv
+     ```
+
+4. **Activate the environment**
+   - For VS Code:
+     ```bash
+     myenv\Scripts\activate
+     ```
+   - For Command Prompt:
+     ```bash
+     .\myenv\Scripts\activate
+     ```
+   - You should see `(myenv)` on the left side of your terminal prompt.
+
+5. **Install Django**
+   - Run:
+     ```bash
+     pip install django
+     ```
+
+6. **Create the project**
+   - Run:
+     ```bash
+     django-admin startproject projectname
+     ```
+
+7. **Create an app**
+   - Navigate to your project directory:
+     ```bash
+     cd projectname
+     ```
+   - Create a new app:
+     ```bash
+     django-admin startapp appname
+     ```
+
+8. **Ensure proper file arrangement**
+   - Verify your directories and files are correctly set up.
+   - Continuation of the setup involves editing `.py` files as needed for your project.
+
+# Tailwind CSS Framework Setup
+
+## Installation Instructions
+
+1. **Modify `INSTALLED_APPS` in `settings.py`**
+   - Add `'tailwind'` to the list of installed apps.
+
+2. **Install dependencies and initialize Tailwind**
+   - In Powershell (inside the virtual environment `myenv`), run:
+     ```bash
+     python -m pip install django-tailwind
+     ```
+   - Navigate to your project directory:
+     ```bash
+     cd projectname
+     ```
+   - Initialize Tailwind:
+     ```bash
+     python manage.py tailwind init
+     ```
+   - When prompted for `app_name[theme]`, type `theme`.
+   - Add `'theme'` and `'django_browser_reload'` to `INSTALLED_APPS` in `settings.py`.
+   - Install the browser reload package:
+     ```bash
+     pip install django-browser-reload
+     ```
+
+3. **Update `settings.py`**
+   - Add the following lines:
+     ```python
+     TAILWIND_APP_NAME = 'theme'
+     INTERNAL_IPS = ["127.0.0.1",]
+     ```
+
+4. **Add middleware**
+   - Append the following line to the `MIDDLEWARE` list in `settings.py`:
+     ```python
+     "django_browser_reload.middleware.BrowserReloadMiddleware",
+     ```
+
+5. **Update `urls.py`**
+   - Add the following line to the project's `urls.py` file:
+     ```python
+     path("reload/", include("django_browser_reload.urls")),
+     ```
+
+6. **Start Tailwind**
+   - Run:
+     ```bash
+     python manage.py tailwind start
+     
+
 
 #DATABASE
 ---POSTGRESQL
