@@ -148,8 +148,19 @@ Key features include:
 - Interact with the database via Django ORM for CRUD operations.
 
 ## Roadmap
+- [ ] Add more comprehensive error handling for database operations.
+- [ ] Implement database backup and restore features.
+- [ ] Optimize query performance with indexing and caching.
+- [ ] Add support for additional authentication mechanisms.
 
 ## Contributing
+
+Contributions are welcome! To contribute:
+1. Fork this repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m 'Add YourFeature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a Pull Request.
 ## License
 
 ## Contact 
