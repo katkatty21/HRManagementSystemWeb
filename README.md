@@ -146,9 +146,9 @@ Key features include:
 
 
 ## Contact 
-- **Project Maintainer**: Katrina
-- **Email**: katrinaamores@gmail.com
-- **GitHub**: [)
+- **Project Maintainer**: Katrina Amores, Sophie Seismundo, Rey Christian Bacolod
+- **Email**: katrinaamores@gmail.com, bacolod2186@gmail.com, sophieseismundo@gmail.com
+
 
 ## Acknowledgments
 
