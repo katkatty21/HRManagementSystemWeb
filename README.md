@@ -20,9 +20,6 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -147,23 +144,7 @@ Key features include:
 - Run `python manage.py makemigrations` and `python manage.py migrate` in your Django project to apply model changes to the database.
 - Interact with the database via Django ORM for CRUD operations.
 
-## Roadmap
-- [ ] Add more comprehensive error handling for database operations.
-- [ ] Implement database backup and restore features.
-- [ ] Optimize query performance with indexing and caching.
-- [ ] Add support for additional authentication mechanisms.
 
-## Contributing
-
-Contributions are welcome! To contribute:
-1. Fork this repository.
-2. Create a new branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes (`git commit -m 'Add YourFeature'`).
-4. Push to the branch (`git push origin feature/YourFeature`).
-5. Open a Pull Request.
-   
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## Contact 
 - **Project Maintainer**: Katrina
