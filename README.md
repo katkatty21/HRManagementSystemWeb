@@ -118,6 +118,63 @@ Key features include:
 - Basic understanding of SQL and Django ORM.
 
 ## Installation
+
+
+
+**Tailwind CSS Framework Setup** 
+
+
+1. **Modify `INSTALLED_APPS` in `settings.py`**
+   - Add `'tailwind'` to the list of installed apps.
+
+2. **Install dependencies and initialize Tailwind**
+   - In Powershell (inside the virtual environment `myenv`), run:
+     ```bash
+     python -m pip install django-tailwind
+     ```
+   - Navigate to your project directory:
+     ```bash
+     cd projectname
+     ```
+   - Initialize Tailwind:
+     ```bash
+     python manage.py tailwind init
+     ```
+   - When prompted for `app_name[theme]`, type `theme`.
+   - Add `'theme'` and `'django_browser_reload'` to `INSTALLED_APPS` in `settings.py`.
+   - Install the browser reload package:
+     ```bash
+     pip install django-browser-reload
+     ```
+
+3. **Update `settings.py`**
+   - Add the following lines:
+     ```python
+     TAILWIND_APP_NAME = 'theme'
+     INTERNAL_IPS = ["127.0.0.1",]
+     ```
+
+4. **Add middleware**
+   - Append the following line to the `MIDDLEWARE` list in `settings.py`:
+     ```python
+     "django_browser_reload.middleware.BrowserReloadMiddleware",
+     ```
+
+5. **Update `urls.py`**
+   - Add the following line to the project's `urls.py` file:
+     ```python
+     path("reload/", include("django_browser_reload.urls")),
+     ```
+
+6. **Start Tailwind**
+   - Run:
+     ```bash
+     python manage.py tailwind start
+
+
+**PostgreSQL Installation** 
+
+
 1. **Download PostgreSQL Installer**
    - Download the PostgreSQL `.exe` from the following link:
      [PostgreSQL Download](https://www.postgresql.org/ftp/pgadmin/pgadmin4/v8.12/windows/)
@@ -153,17 +210,18 @@ Key features include:
 - Rey Christian Bacolod: reychristian.bacolod@cit.edu
 
 
-## Additional Resources 
-
-- Functional Requirements Document: 
-- Gantt Chart:
-- Entity Relationship Diagram (ERD): 
-
 ## Acknowledgments
 
 - PostgreSQL documentation: [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)
 - Django documentation: [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
 - Special thanks to the contributors of open-source tools used in this project.
+
+
+## Additional Resources 
+
+- Functional Requirements Document: 
+- Gantt Chart:
+- Entity Relationship Diagram (ERD): 
 
 
 
