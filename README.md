@@ -161,9 +161,14 @@ Contributions are welcome! To contribute:
 3. Commit your changes (`git commit -m 'Add YourFeature'`).
 4. Push to the branch (`git push origin feature/YourFeature`).
 5. Open a Pull Request.
+   
 ## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## Contact 
+- **Project Maintainer**: Katrina
+- **Email**: katrinaamores@gmail.com
+- **GitHub**: [)
 
 ## Acknowledgments
 
