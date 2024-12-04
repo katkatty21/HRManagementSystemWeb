@@ -33,6 +33,7 @@ class AttendanceRecord(models.Model):
         return f"Attendance {self.attendance_id} for {self.employee} on {self.date}"
 
 
+
 class LeaveType(models.Model):
     leave_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     leave_name = models.CharField(max_length=50)
@@ -54,6 +55,7 @@ class LeaveRequest(models.Model):
 
     def __str__(self):
         return f"Leave {self.leave_id} for {self.employee}"
+
     
 class PerformanceReport(models.Model):
     report_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -68,18 +70,32 @@ class PerformanceReport(models.Model):
 
 
 class SanctionReport(models.Model):
+    SANCTION_TYPES = [
+        ('Written Warning', 'Written Warning'),
+        ('Verbal Warning', 'Verbal Warning'),
+        ('Suspension', 'Suspension'),
+        ('Performance Improvement Plan (PIP)', 'Performance Improvement Plan (PIP)'),
+        ('Demotion', 'Demotion'),
+        ('Termination', 'Termination'),
+        ('Probation', 'Probation'),
+        ('Loss of Privileges', 'Loss of Privileges'),
+        ('Training or Re-Training', 'Training or Re-Training'),
+        ('Demotion in Pay or Benefits', 'Demotion in Pay or Benefits'),
+        ('Suspension of Certain Rights or Benefits', 'Suspension of Certain Rights or Benefits'),
+    ]
+
     sanction_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='sanction_reports')
     sanction_reason = models.CharField(max_length=255)
     sanction_details = models.TextField()
-    sanction_type = models.CharField(max_length=255)  
-    sanction_date = models.DateField()  
-    status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Resolved', 'Resolved')])  
+    sanction_type = models.CharField(max_length=255, choices=SANCTION_TYPES)  # Add choices here
+    sanction_date = models.DateField()
+    status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Resolved', 'Resolved')])
     date_created = models.DateField(auto_now_add=True)
+    sanction_report_file = models.FileField(upload_to='sanction_reports/', null=True, blank=True)  # Field to upload file
 
     def __str__(self):
         return f"Sanction for {self.employee.first_name} {self.employee.last_name}: {self.sanction_reason}"
-
 
 
 class PerformanceReview(models.Model):
@@ -93,3 +109,93 @@ class PerformanceReview(models.Model):
 
     def __str__(self):
         return f"Review by {self.reviewer.first_name} {self.reviewer.last_name} for {self.employee.first_name} {self.employee.last_name}"
+    
+
+
+from django.db import models
+import uuid
+
+class PeerFeedback(models.Model):
+    feedback_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    from_user = models.ForeignKey(
+        EmployeeInformation,
+        on_delete=models.CASCADE,
+        related_name='feedback_given'
+    )
+    to_user = models.ForeignKey(
+        EmployeeInformation,
+        on_delete=models.CASCADE,
+        related_name='feedback_received'
+    )
+    question_1 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_2 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_3 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_4 = models.CharField(
+        choices=[('yes', 'Yes'), ('no', 'No')],
+        max_length=3,
+        null=True,
+        blank=True
+    )
+    question_5 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    question_6 = models.IntegerField(
+        choices=[(1, 'Poor'), (2, 'Fair'), (3, 'Good'), (4, 'Excellent')],
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.from_user} to {self.to_user}"
+
+
+class SelfAssessment(models.Model):
+    RATING_CHOICES = [
+        (1, 'Poor'),
+        (2, 'Fair'),
+        (3, 'Good'),
+        (4, 'Excellent'),
+    ]
+
+    TEAMWORK_CHOICES = [
+        (1, 'Needs Improvement'),
+        (2, 'Satisfactory'),
+        (3, 'Effective'),
+        (4, 'Highly Effective'),
+    ]
+
+    ALIGNMENT_CHOICES = [
+        (1, 'Poorly Aligned'),
+        (2, 'Somewhat Aligned'),
+        (3, 'Well Aligned'),
+        (4, 'Fully Aligned'),
+    ]
+
+    self_assessment_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    employee = models.ForeignKey(EmployeeInformation, on_delete=models.CASCADE, related_name='self_assessments')
+    performance_rating = models.IntegerField(choices=RATING_CHOICES)
+    skill_development = models.IntegerField(choices=RATING_CHOICES)
+    teamwork = models.IntegerField(choices=TEAMWORK_CHOICES)
+    communication_skills = models.IntegerField(choices=RATING_CHOICES)
+    company_culture = models.IntegerField(choices=ALIGNMENT_CHOICES)
+    work_life_balance = models.IntegerField(choices=RATING_CHOICES)
+    suggestions_for_improvement = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Self-Assessment by {self.employee.first_name} {self.employee.last_name} on {self.submitted_at}"
