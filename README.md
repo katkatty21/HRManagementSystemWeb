@@ -29,12 +29,12 @@
 
 
 
-## 🌟 About The Project
+## About The Project
 
 The **HR Management System** is a comprehensive platform designed to streamline and optimize the core functions of Human Resources. Built to simplify processes like employee data management, attendance tracking, payroll processing, performance evaluations, and recruitment, this system serves as an all-in-one solution for HR departments of any size. By centralizing data and automating repetitive tasks, it reduces administrative workload and helps HR teams focus on strategic activities, such as talent development and employee engagement.
 
 
-### 🎯 Key Features
+### Key Features
 - **Employee Profiles**: Centralized database for managing employee records and personal information.
 - **Attendance Management**: Efficiently track attendance, leaves, and absences with real-time counts for absentees, leaves, and those present, while providing comprehensive records, with overtime and  regular hours record to ensure transparency and accountability.
 - **Payroll Management**: Automated calculations, deductions, and payments with secure storage and accessibility
@@ -45,14 +45,14 @@ The **HR Management System** is a comprehensive platform designed to streamline 
 
 
 
-## 🛠️ Built With  
+## Built With  
 
 - **Backend**: Django (Python) - A high-level web framework for efficient and scalable backend development.  
 - **Database**: PostgreSQL - A powerful and reliable database system for managing structured data.  
 - **Frontend**: Tailwind CSS - A utility-first CSS framework for designing responsive and customizable user interfaces.  
 
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 Ensure you have the following:
@@ -137,7 +137,7 @@ Ensure you have the following:
    - To run SQL commands, right-click on the database and select `Query Tool`.
 
 
-## 🎯 Usage
+## Usage
 
 1. **Run Migrations**
    ```bash
@@ -159,7 +159,7 @@ Ensure you have the following:
 
 
 
-## 📞 Contact
+## Contact
 
 
   
@@ -169,7 +169,7 @@ Ensure you have the following:
 
 
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Functional Requirements Document](https://docs.google.com/document/d/1wRUX7TfamZ61ei4otYVEJMC07NCnUOh7NaZMVRlH61s/edit?tab=t.0)
 - [Gantt Chart:](https://docs.google.com/spreadsheets/d/100kTUpP4Sychp47k7l7S2iiFd9uNb3wG9xwUYE7GOIQ/edit?gid=0#gid=0)
@@ -178,7 +178,7 @@ Ensure you have the following:
 
 
 
-## 🙌 Acknowledgments
+## Acknowledgments
 
 - [Django Documentation](https://docs.djangoproject.com/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
