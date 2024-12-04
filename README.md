@@ -20,10 +20,8 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
+     <li><a href="#additional-resources">Additional Resources</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
@@ -35,32 +33,24 @@ The HR Management System is a comprehensive platform designed to streamline and 
 Key features include:
 
 - Employee Profiles: Centralized database for managing employee records and personal information.
-- Attendance Tracking: Efficient tracking of attendance, leave, and absences, providing transparency and accountability.
+- Attendance Management: Efficiently track attendance, leaves, and absences with real-time counts for absentees, leaves, and those present, while providing comprehensive records, with overtime and  regular hours record to ensure transparency and accountability.
 - Payroll Management: Automated calculations, deductions, and payments with secure storage and accessibility
-- Performance Feedback: Tools to facilitate continuous performance tracking, goal-setting, and reviews.
+- Performance Management: Tools for peer feedback, self-assessment, supervisor feedback, and sanction reporting
 - Recruitment: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
 - Reporting and Analytics: Real-time insights into HR data to support decision-making and compliance.
 
-#Reminders
---Don't use previous project
---Commit through branch
 
 
 ## Built With
-The HR Management System is a comprehensive platform designed to streamline and optimize the core functions of Human Resources. Built to simplify processes like employee data management, attendance tracking, payroll processing, performance evaluations, and recruitment, this system serves as an all-in-one solution for HR departments of any size. By centralizing data and automating repetitive tasks, it reduces administrative workload and helps HR teams focus on strategic activities, such as talent development and employee engagement.
 
-Key features include:
 
-- Employee Profiles: Centralized database for managing employee records and personal information.
-- Attendance Tracking: Efficient tracking of attendance, leave, and absences, providing transparency and accountability.
-- Payroll Management: Automated calculations, deductions, and payments with secure storage and accessibility
-- Performance Feedback: Tools to facilitate continuous performance tracking, goal-setting, and reviews.
-- Recruitment: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
-- Reporting and Analytics: Real-time insights into HR data to support decision-making and compliance.
+- **Python Django**: A high-level Python web framework that encourages rapid development and clean, pragmatic design.
+- **PostgreSQL**: A powerful, open-source object-relational database system.
 
-#Reminders
---Don't use previous project
---Commit through branch
+
+- **CSS Framework: Tailwind CSS**: A utility-first CSS framework for creating custom designs directly in your markup.
+
+
 
 ## Getting Started
 
@@ -118,9 +108,21 @@ Key features include:
    - Verify your directories and files are correctly set up.
    - Continuation of the setup involves editing `.py` files as needed for your project.
 
-# Tailwind CSS Framework Setup
 
-## Installation Instructions
+
+## Prerequisites
+
+- Python 3.x installed and configured.
+- Django installed in a virtual environment.
+- PostgreSQL installed with `pgAdmin`.
+- Basic understanding of SQL and Django ORM.
+
+## Installation
+
+
+
+**Tailwind CSS Framework Setup** 
+
 
 1. **Modify `INSTALLED_APPS` in `settings.py`**
    - Add `'tailwind'` to the list of installed apps.
@@ -168,14 +170,61 @@ Key features include:
    - Run:
      ```bash
      python manage.py tailwind start
-     
 
 
-#DATABASE
----POSTGRESQL
-Installations 1. Download Postgresql .exe https://www.postgresql.org/ftp/pgadmin/pgadmin4/v8.12/windows/ 2. Install Necessary, pgAdmin 3. Create the Database through pgAdmin, name it dbhrmanagement, Just check my files sa database sa settings (Right click in pgAdmin to execute commands) - General Tab then Owner is Postgres - Definition
-Econding - UTF8
-Tablespace -pd_default
-Collation and Character - english / en_US/ - Security - Privileges - Grantee fyang - else ALL 4. create your models, modify setting.py
+**PostgreSQL Installation** 
 
-#DJANGO ADMIN
+
+1. **Download PostgreSQL Installer**
+   - Download the PostgreSQL `.exe` from the following link:
+     [PostgreSQL Download](https://www.postgresql.org/ftp/pgadmin/pgadmin4/v8.12/windows/)
+
+2. **Install Required Components**
+   - During installation, ensure that `pgAdmin` is selected as a component.
+
+3. **Create the Database**
+   - Open `pgAdmin`.
+   - Create a new database:
+     - Right-click on `Databases` > `Create` > `Database`.
+     - Name the database `dbhrmanagement`.
+     - In the **General Tab**, set the **Owner** to `postgres`.
+   - Check the database files in `pgAdmin` for additional settings or configurations.
+   - Use the **Definition Tab** for further configuration if necessary.
+
+4. **Execute Commands in pgAdmin**
+   - To run SQL commands, right-click on the database and select `Query Tool`.
+
+
+## Usage
+
+- Start the PostgreSQL service and ensure it is running.
+- Use `pgAdmin` for database management and to execute SQL queries if needed.
+- Run `python manage.py makemigrations` and `python manage.py migrate` in your Django project to apply model changes to the database.
+- Implement database interactions using Django ORM and design a user-friendly interface for performing CRUD operations. Utilize Tailwind CSS to ensure responsive and visually appealing design.
+
+
+## Contact
+
+- Sophie Seismundo; sophie.seismundo@cit.edu
+- Katrina Amores: katrina.amores@cit.edu
+- Rey Christian Bacolod: reychristian.bacolod@cit.edu
+
+
+## Acknowledgments
+
+- PostgreSQL documentation: [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)
+- Django documentation: [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
+- Special thanks to the contributors of open-source tools used in this project.
+
+
+## Additional Resources 
+
+- Functional Requirements Document: 
+- Gantt Chart:
+- Entity Relationship Diagram (ERD): 
+
+
+
+
+
+
