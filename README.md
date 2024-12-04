@@ -21,6 +21,7 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contact">Contact</a></li>
+     <li><a href="#additional-resources">Additional Resources</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
@@ -145,15 +146,27 @@ Key features include:
 - Implement database interactions using Django ORM and design a user-friendly interface for performing CRUD operations. Utilize Tailwind CSS to ensure responsive and visually appealing design.
 
 
-## Contact 
-- **Project Maintainer**: Katrina Amores, Sophie Seismundo, Rey Christian Bacolod
-- **Email**: katrinaamores@gmail.com, bacolod2186@gmail.com, sophieseismundo@gmail.com
+## Contact
 
+- Sophie Seismundo; sophie.seismundo@cit.edu
+- Katrina Amores: katrina.amores@cit.edu
+- Rey Christian Bacolod: reychristian.bacolod@cit.edu
+
+
+## Additional Resources 
+
+- Functional Requirements Document: 
+- Gantt Chart:
+- Entity Relationship Diagram (ERD): 
 
 ## Acknowledgments
 
 - PostgreSQL documentation: [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)
 - Django documentation: [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
 - Special thanks to the contributors of open-source tools used in this project.
+
+
+
+
 
 
