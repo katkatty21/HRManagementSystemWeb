@@ -13,8 +13,6 @@ from .models import EmployeeInformation, AttendanceRecord
 from hraccount.views import admin_home, user_home
 
 PHILIPPINES_TZ = pytz_timezone('Asia/Manila')
-# Create your views here.
-@login_required(login_url='login')
 
 @login_required(login_url='login')
 def admin_clock_in(request):
@@ -160,8 +158,19 @@ def attendance_record(request):
         return redirect('login')
     
 @login_required(login_url='login')
-def attendance_list(request):
+def admin_attendance_list(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You are not authorized to view this page.")
     attendance_records = AttendanceRecord.objects.all().select_related('employee').order_by('-date')
     return render(request, 'admin/attendance_record.html', {
+        'attendance_records': attendance_records
+    })
+
+@login_required(login_url='login')
+def user_attendance_list(request):
+    employee = EmployeeInformation.objects.get(employee_id=request.user.account_id)
+    attendance_records = AttendanceRecord.objects.filter(employee=employee).order_by('-date')
+    
+    return render(request, 'user/attendance_record.html', {
         'attendance_records': attendance_records
     })
