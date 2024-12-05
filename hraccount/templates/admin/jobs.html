@@ -1,0 +1,85 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Job Management{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 flex-1">
+
+    <h1 class="text-3xl font-semibold text-gray-700 mb-6">Job Management</h1>
+
+    <!-- Display success/error messages -->
+    {% if messages %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Add Job Button -->
+    <div class="mb-6 flex justify-end">
+        <a href="{% url 'add_job' %}" class="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">Add New Job</a>
+    </div>
+
+    <!-- Job List Table -->
+    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <table class="min-w-full table-auto">
+            <thead class="bg-gray-100">
+                <tr class="text-left">
+                    <th class="px-4 py-2 text-sm text-gray-600">Job Title</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Department</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Job Description</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Requirements</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Status</th> <!-- Added Status column -->
+                    <th class="px-4 py-2 text-sm text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr class="border-b border-gray-200">
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ job.job_title }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ job.department.department_name }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ job.job_description|truncatewords:10 }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ job.requirements|truncatewords:10 }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">
+                        <!-- Display Status -->
+                        <span class="px-4 py-2 inline-block rounded-full 
+                            {% if job.status == 'OPEN' %} bg-green-100 text-green-600 
+                            {% elif job.status == 'CLOSED' %} bg-red-100 text-red-600 
+                            {% elif job.status == 'FILLED' %} bg-blue-100 text-blue-600 
+                            {% else %} bg-gray-100 text-gray-600 {% endif %}">
+                            {{ job.status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2 text-sm">
+                        <!-- Actions in Flex with Gap -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Edit Button with Icon -->
+                            <a href="{% url 'edit_job' job.job_id %}" class="text-yellow-600 hover:text-yellow-700 flex items-center space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M17.121 3.879a..." />
+                                </svg>
+                                <span>Edit</span>
+                            </a>
+                            <!-- Delete Button with Icon -->
+                            <a href="{% url 'delete_job' job.job_id %}" class="text-red-600 hover:text-red-700 flex items-center space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M17.121 3.879a..." />
+                                </svg>
+                                <span>Delete</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-gray-500">No jobs found</td> <!-- Updated colspan to 6 -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

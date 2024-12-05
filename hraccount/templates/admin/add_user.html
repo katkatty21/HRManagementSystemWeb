@@ -1,0 +1,51 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Add User{% endblock %}
+
+{% block content %}
+    <div class="mt-10 mb-5 ml-28">
+        <a href="{% url 'users_list' %}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+            Go Back
+        </a>
+    </div>
+    
+    <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Add New User</h2>
+        
+        <!-- Success or Error Message -->
+        {% if success_message %}
+            <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-md">
+                <strong>Success!</strong> {{ success_message }}
+            </div>
+        {% endif %}
+        
+        <!-- Form Section -->
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Email and Role fields (two columns layout) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" id="email" value="{{ request.POST.email }}" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                    <select name="role" id="role" class="mt-1 block w-full px-6 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="Admin" {% if request.POST.role == 'Admin' %}selected{% endif %}>Admin</option>
+                        <option value="User" {% if request.POST.role == 'User' %}selected{% endif %}>User</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-6">
+                <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Create User
+                </button>
+            </div>
+        </form>
+    </div>
+
+    
+{% endblock %}

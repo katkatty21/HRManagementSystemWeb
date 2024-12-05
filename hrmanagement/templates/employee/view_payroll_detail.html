@@ -1,0 +1,81 @@
+{% extends 'base_user.html' %}
+{% load static %}
+
+{% block title %}Payroll Detail{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Payroll Details</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Pay period: {{ record.payroll_period.start_date|date:"M d, Y" }} - {{ record.payroll_period.end_date|date:"M d, Y" }}</p>
+        </div>
+        <div class="border-t border-gray-200">
+            <dl>
+                <!-- Basic Information -->
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Employee Name</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ record.employee.first_name }} {{ record.employee.last_name }}</dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Department</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ record.employee.job.department.department_name }}</dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Position</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ record.employee.job.job_title }}</dd>
+                </div>
+
+                <!-- Earnings -->
+                <div class="bg-gray-50 px-4 py-5 sm:px-6">
+                    <h4 class="text-lg font-medium text-gray-900">Earnings</h4>
+                    <div class="mt-4 space-y-4">
+                        <div class="sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-sm font-medium text-gray-500">Base Salary</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">P{{ record.base_salary|floatformat:2 }}</dd>
+                        </div>
+                        <div class="sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-sm font-medium text-gray-500">Total Bonus</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">+P{{ record.total_bonus|floatformat:2 }}</dd>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deductions -->
+                <div class="bg-white px-4 py-5 sm:px-6">
+                    <h4 class="text-lg font-medium text-gray-900">Deductions</h4>
+                    <div class="mt-4 space-y-4">
+                        <div class="sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-sm font-medium text-gray-500">Total Deductions</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">-P{{ record.total_deduction|floatformat:2 }}</dd>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="bg-white px-4 py-5 sm:px-6">
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-base font-medium text-gray-900">Net Pay</dt>
+                            <dd class="mt-1 text-base font-bold text-gray-900 sm:mt-0 sm:col-span-2">P{{ record.net_salary|floatformat:2 }}</dd>
+                        </div>
+                    </div>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-6 flex justify-end space-x-4">
+        <a href="{% url 'hrmanagement:view_payroll' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Back to Payroll History
+        </a>
+        {% if record.payroll_period.is_processed %}
+        <a href="{% url 'hrmanagement:download_payslip' record.id %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-download mr-2"></i>
+            Download Payslip
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

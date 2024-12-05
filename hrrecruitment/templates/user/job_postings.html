@@ -1,0 +1,60 @@
+{% extends 'base_user.html' %}
+{% load static %}
+
+{% block title %}Job Opportunities{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Career Opportunities</h1>
+
+    <!-- Job Listings Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for posting in job_postings %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">{{ posting.title }}</h2>
+                    <span class="px-3 py-1 text-sm rounded-full 
+                        {% if posting.employment_type == 'FULL_TIME' %}bg-blue-100 text-blue-800
+                        {% elif posting.employment_type == 'PART_TIME' %}bg-green-100 text-green-800
+                        {% elif posting.employment_type == 'CONTRACT' %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-purple-100 text-purple-800{% endif %}">
+                        {{ posting.get_employment_type_display }}
+                    </span>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-gray-600"><i class="fas fa-building mr-2"></i>{{ posting.department.department_name }}</p>
+                    <p class="text-gray-600"><i class="fas fa-calendar mr-2"></i>Posted {{ posting.created_at|date:"M d, Y" }}</p>
+                    {% if posting.closing_date %}
+                    <p class="text-gray-600"><i class="fas fa-clock mr-2"></i>Closes {{ posting.closing_date|date:"M d, Y" }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2"></i>{{ posting.location }}</p>
+                    {% if posting.salary_range %}
+                    <p class="text-gray-600"><i class="fas fa-money-bill-wave mr-2"></i>{{ posting.salary_range }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="font-semibold text-gray-700 mb-2">Job Description</h3>
+                    <p class="text-gray-600 line-clamp-3">{{ posting.description }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-3 text-center py-8">
+            <p class="text-gray-500 text-lg">No job opportunities available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// No JavaScript code needed
+</script>
+{% endblock %}

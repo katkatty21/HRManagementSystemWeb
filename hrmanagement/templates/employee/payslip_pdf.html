@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Payslip</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .payslip-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            margin-bottom: 10px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .label {
+            font-weight: bold;
+            width: 40%;
+        }
+        .value {
+            width: 60%;
+        }
+        .total {
+            margin-top: 20px;
+            border-top: 2px solid #000;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">{{ company_name }}</div>
+        <div class="payslip-title">PAYSLIP</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Employee Information</div>
+        <div class="info-row">
+            <span class="label">Name:</span>
+            <span class="value">{{ record.employee.first_name }} {{ record.employee.last_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Department:</span>
+            <span class="value">{{ record.employee.department.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Position:</span>
+            <span class="value">{{ record.employee.position }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Pay Period</div>
+        <div class="info-row">
+            <span class="label">Period:</span>
+            <span class="value">{{ record.payroll_period.start_date|date:"M d, Y" }} - {{ record.payroll_period.end_date|date:"M d, Y" }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Earnings</div>
+        <div class="info-row">
+            <span class="label">Basic Salary:</span>
+            <span class="value">₱{{ record.base_salary|floatformat:2 }}</span>
+        </div>
+        {% if record.total_bonus > 0 %}
+        <div class="info-row">
+            <span class="label">Total Bonus:</span>
+            <span class="value">₱{{ record.total_bonus|floatformat:2 }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if record.total_deduction > 0 %}
+    <div class="section">
+        <div class="section-title">Deductions</div>
+        <div class="info-row">
+            <span class="label">Total Deductions:</span>
+            <span class="value">-₱{{ record.total_deduction|floatformat:2 }}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="section">
+        <div class="total">
+            <div class="info-row">
+                <span class="label">Net Pay:</span>
+                <span class="value">₱{{ record.net_salary|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" style="margin-top: 50px;">
+        <div class="info-row">
+            <span class="label">Date Generated:</span>
+            <span class="value">{{ record.date_processed|date:"F d, Y" }}</span>
+        </div>
+    </div>
+</body>
+</html>

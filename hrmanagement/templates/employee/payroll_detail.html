@@ -1,0 +1,144 @@
+{% extends 'base_user.html' %}
+{% load static %}
+
+{% block page_title %}Payroll Details{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Payroll Summary Card -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Payroll Summary</h3>
+            </div>
+            <div class="p-6">
+                <dl class="divide-y divide-gray-200">
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500">Period:</dt>
+                        <dd class="text-sm text-gray-900">{{ record.payroll_period.start_date }} to {{ record.payroll_period.end_date }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500">Base Salary:</dt>
+                        <dd class="text-sm text-gray-900">{{ record.base_salary }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500">Total Bonus:</dt>
+                        <dd class="text-sm text-green-600">+{{ record.total_bonus }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500">Total Deduction:</dt>
+                        <dd class="text-sm text-red-600">-{{ record.total_deduction }}</dd>
+                    </div>
+                    <div class="py-3 flex justify-between">
+                        <dt class="text-sm font-medium text-gray-500">Net Salary:</dt>
+                        <dd class="text-sm font-semibold text-gray-900">{{ record.net_salary }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Adjustments Card -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Adjustments</h3>
+            </div>
+            <div class="p-6">
+                {% if adjustments %}
+                <div class="flow-root">
+                    <ul role="list" class="-my-5 divide-y divide-gray-200">
+                        {% for adjustment in adjustments %}
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    {% if adjustment.adjustment_type == 'BONUS' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-plus-circle mr-1"></i> Bonus
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-minus-circle mr-1"></i> Deduction
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">{{ adjustment.description }}</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <span class="text-sm {% if adjustment.adjustment_type == 'BONUS' %}text-green-600{% else %}text-red-600{% endif %}">
+                                        {% if adjustment.adjustment_type == 'BONUS' %}+{% else %}-{% endif %}{{ adjustment.amount }}
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500">No adjustments for this period.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-6 flex space-x-3">
+        <a href="{% url 'view_payroll' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Payroll List
+        </a>
+        <button type="button" onclick="submitCorrection('{{ record.pk }}')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+            <i class="fas fa-edit mr-2"></i> Request Correction
+        </button>
+    </div>
+
+    <!-- Correction Request Modal -->
+    <div id="correctionModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
+                <form method="post" action="{% url 'submit_correction' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="payroll_record" id="payrollRecordId">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Submit Correction Request</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description of Issue</label>
+                            <textarea name="description" rows="4" class="shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md" required></textarea>
+                            <p class="mt-2 text-sm text-gray-500">Please provide details about what needs to be corrected.</p>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3 rounded-b-lg">
+                        <button type="button" onclick="closeModal()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Close
+                        </button>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    function submitCorrection(recordId) {
+        document.getElementById('payrollRecordId').value = recordId;
+        document.getElementById('correctionModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('correctionModal').classList.add('hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('correctionModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

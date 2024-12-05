@@ -1,0 +1,198 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %} - SRK Solutions</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logosvg.png' %}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        .sidebar a.active {
+            color: #1d4ed8;
+            background-color: #e0f2fe;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-200 to-gray-100">
+    <!-- User Navbar -->
+    <nav class="fixed top-0 left-0 right-0 bg-white shadow-lg z-30">
+        <div class="px-4 h-16 flex justify-between items-center">
+            <div class="flex items-center">
+                <button id="mobile-menu-button" class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center ml-4">
+                    <a href="{% url 'user_home' %}" class="flex items-center ml-4">
+                        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-8 w-auto" />
+                        <span class="ml-3 text-xl font-semibold text-gray-800">SRK Solutions</span>
+                    </a>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative" x-data="{ open: false }">
+                    <button id="profile-menu-button" 
+                            type="button"
+                            class="flex items-center space-x-3 focus:outline-none"
+                            aria-expanded="false"
+                            aria-haspopup="true">
+                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                            {{ request.user.username|slice:":1"|upper|default:"U" }}
+                        </div>
+                        <span class="hidden md:block text-sm font-medium text-gray-700">
+                            {{ request.user.username|default:"User" }}
+                        </span>
+                        <i class="fas fa-chevron-down text-sm text-gray-500"></i>
+                    </button>
+                    <div id="profile-dropdown" 
+                         class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 border border-gray-200 z-50"
+                         role="menu"
+                         aria-orientation="vertical"
+                         aria-labelledby="profile-menu-button">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200" role="menuitem">
+                            <i class="fas fa-user mr-2"></i> Profile
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200" role="menuitem">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200" role="menuitem">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-20">
+        <div class="flex flex-col h-full">
+            <nav class="flex-1 py-4 px-3 space-y-1">
+                <a href="{% url 'user_home' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-tachometer-alt w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="{% url 'hrmanagement:view_payroll' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'view_payroll' or request.resolver_match.url_name == 'payroll_detail' %}active{% endif %}">
+                    <i class="fas fa-wallet w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Payroll</span>
+                </a>
+                <a href="{% url 'hrrecruitment:job_postings' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'job_postings' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="fas fa-briefcase w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Job Postings</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-calendar-check w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Attendance</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Leave Request</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-chart-line w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Performance</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                    <i class="fas fa-cogs w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Trainings</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-0 md:ml-64 pt-16 min-h-screen transition-all duration-300">
+        <div class="p-4">
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800{% elif message.tags == 'error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-2xl font-semibold text-gray-800">{% block page_title %}{% endblock %}</h1>
+                </div>
+                <div class="p-6">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% block modal %}{% endblock %}
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const profileButton = document.getElementById('profile-menu-button');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            let isDropdownOpen = false;
+
+            // Mobile menu toggle
+            if (mobileMenuButton && sidebar) {
+                mobileMenuButton.addEventListener('click', function() {
+                    sidebar.classList.toggle('-translate-x-full');
+                });
+            }
+
+            // Profile dropdown toggle
+            if (profileButton && profileDropdown) {
+                // Toggle dropdown on button click
+                profileButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    isDropdownOpen = !isDropdownOpen;
+                    if (isDropdownOpen) {
+                        profileDropdown.classList.remove('hidden');
+                    } else {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (isDropdownOpen && !profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.add('hidden');
+                        isDropdownOpen = false;
+                    }
+                });
+
+                // Close dropdown on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && isDropdownOpen) {
+                        profileDropdown.classList.add('hidden');
+                        isDropdownOpen = false;
+                    }
+                });
+            }
+
+            // Add loading animation to logout link
+            const logoutLink = document.querySelector('a[href*="logout"]');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const icon = logoutLink.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-sign-out-alt');
+                        icon.classList.add('fa-spinner', 'fa-spin');
+                    }
+                    setTimeout(function() {
+                        window.location.href = logoutLink.href;
+                    }, 300);
+                });
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock extra_js %}
+</body>
+</html>

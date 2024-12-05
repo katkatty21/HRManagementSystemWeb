@@ -1,0 +1,78 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Employees{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 flex-1">
+
+    <h1 class="text-3xl font-semibold text-gray-700 mb-6">Employee Management</h1>
+
+    <!-- Display Error Message if No Employee is Selected -->
+    {% if messages %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Add Employee Button -->
+    <div class="mb-4 flex justify-end">
+        <a href="{% url 'add_employee' %}" class="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">Add New Employee</a>
+    </div>
+
+    <!-- Employee List Table -->
+    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <table class="min-w-full table-auto">
+            <thead class="bg-gray-100">
+                <tr class="text-left">
+                    <th class="px-4 py-2 text-sm text-gray-600">Profile</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Full Name</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Email</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Job</th>
+                    <th class="px-4 py-2 text-sm text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr class="border-b border-gray-200">
+                    <td class="px-4 py-2">
+                        {% if employee.profile_picture %}
+                        <img src="{{ employee.profile_picture.url }}" width="50" height="50" style="border-radius: 50%;" />
+                        {% else %}
+                        <span>No Profile</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ employee.first_name }} {{ employee.last_name }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ employee.email }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">{{ employee.job.job_title }}</td>
+                    <td class="px-4 py-2 text-sm">
+                        <!-- Actions in Flex with Gap -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Edit Button with Icon -->
+                            <a href="{% url 'edit_employee' employee.employee_id.pk %}" class="text-yellow-600 hover:text-yellow-700 flex items-center space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M17.121 3.879a3 3 0 011.414 4.242l-12 12a3 3 0 01-1.414.707l-3 1a1 1 0 01-1.175-1.175l1-3a3 3 0 01.707-1.414l12-12a3 3 0 014.242 0zM4 15.414l8.586-8.586 2 2L6 17.414a3 3 0 01-4.242-4.242l2.828-2.828a1 1 0 011.414 0l5.121 5.121a1 1 0 010 1.414l-4.828 4.828a1..." />
+                                </svg>
+                                <span>Edit</span>
+                            </a>
+
+                            <!-- Delete Button with Icon -->
+                            <a href="{% url 'delete_employee' employee.employee_id.pk %}" class="text-red-600 hover:text-red-700 flex items-center space-x-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 011-1h6a1 1 0 011 1h2a1 1 0 011 1v1h-1V3a1 1 0 00-1-1h-2a1 1 0 01-1-1H7a1 1 0 01-1 1H4a1 1 0 00-1 1v1H2V3a1 1 0 011-1h2zM4 4h12v12H4V4z" />
+                                </svg>
+                                <span>Delete</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %} - SRK Solutions</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logosvg.png' %}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+    <style>
+        .sidebar a.active {
+            color: #1d4ed8;
+            background-color: #e0f2fe;
+        }
+        /* DataTables Tailwind CSS Integration */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_processing,
+        .dataTables_wrapper .dataTables_paginate {
+            @apply text-gray-700 my-3;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            @apply bg-blue-600 text-white border-transparent;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:not(.current) {
+            @apply text-gray-700 hover:bg-gray-100;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gradient-to-b from-blue-200 to-gray-100">
+    <!-- Admin Navbar -->
+    <nav class="fixed top-0 left-0 right-0 bg-white shadow-lg z-30">
+        <div class="px-4 h-16 flex justify-between items-center">
+            <div class="flex items-center">
+                <button id="mobile-menu-button" class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center ml-4">
+                    <a href="{% url 'admin_home' %}" class="flex items-center ml-4">
+                        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-8 w-auto" />
+                        <span class="ml-3 text-xl font-semibold text-gray-800">SRK Solutions Admin</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Right side Profile Menu -->
+            <div class="flex items-center space-x-4">
+                <div class="relative" x-data="{ open: false }">
+                    <button id="profile-menu-button" 
+                            type="button"
+                            class="flex items-center space-x-3 focus:outline-none"
+                            aria-expanded="false"
+                            aria-haspopup="true">
+                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                            {{ request.user.username|slice:":1"|upper|default:"A" }}
+                        </div>
+                        <span class="hidden md:block text-sm font-medium text-gray-700">
+                            {{ request.user.username|default:"Admin" }}
+                        </span>
+                        <i class="fas fa-chevron-down text-sm text-gray-500"></i>
+                    </button>
+                    <div id="profile-dropdown" 
+                         class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 border border-gray-200 z-50"
+                         role="menu"
+                         aria-orientation="vertical"
+                         aria-labelledby="profile-menu-button">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200" role="menuitem">
+                            <i class="fas fa-user-shield mr-2"></i> Admin Profile
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200" role="menuitem">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200" role="menuitem">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-20">
+        <div class="flex flex-col h-full">
+            <!-- Navigation Links -->
+            <nav class="mt-6 space-y-2">
+                <a href="{% url 'admin_home' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'admin_home' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <!-- Employee Management Section -->
+                <div class="mt-6 px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                    Employee Management
+                </div>
+                <div class="mt-2">
+                    <a href="{% url 'employee_list' %}" 
+                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'employee_list' %}bg-blue-50 text-blue-600{% endif %}">
+                        <i class="fas fa-users w-5 h-5 mr-3"></i>
+                        <span class="font-medium">Employees</span>
+                    </a>
+                    <a href="{% url 'department_list' %}" 
+                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'department_list' %}bg-blue-50 text-blue-600{% endif %}">
+                        <i class="fas fa-building w-5 h-5 mr-3"></i>
+                        <span class="font-medium">Departments</span>
+                    </a>
+                    <a href="{% url 'jobs' %}" 
+                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'jobs' %}bg-blue-50 text-blue-600{% endif %}">
+                        <i class="fas fa-briefcase w-5 h-5 mr-3"></i>
+                        <span class="font-medium">Jobs</span>
+                    </a>
+                </div>
+
+                <!-- Payroll Section -->
+                <div class="px-3 mt-4">
+                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Payroll</h3>
+                </div>
+                <a href="{% url 'hrmanagement:payroll_periods' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'payroll_periods' %}active{% endif %}">
+                    <i class="fas fa-clock w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Payroll Periods</span>
+                </a>
+                <a href="{% url 'hrmanagement:employee_salaries' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'employee_salaries' %}active{% endif %}">
+                    <i class="fas fa-money-bill-wave w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Employee Salaries</span>
+                </a>
+                <a href="{% url 'hrmanagement:payroll_adjustments' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'payroll_adjustments' %}active{% endif %}">
+                    <i class="fas fa-sliders-h w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Adjustments</span>
+                </a>
+                
+                <!-- Recruitment Section -->
+                <div class="px-3 mt-4">
+                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recruitment</h3>
+                </div>
+                <a href="{% url 'hrrecruitment:job_postings' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'job_postings' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="fas fa-briefcase w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Job Postings</span>
+                </a>
+                <a href="{% url 'hrrecruitment:job_applications' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'job_applications' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="fas fa-file-alt w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Applications</span>
+                </a>
+                <a href="{% url 'hrrecruitment:interviews' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'interviews' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="fas fa-users w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Interviews</span>
+                </a>
+
+                <!-- HR Management Section -->
+                <div class="mt-6 px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                    HR Management
+                </div>
+                <div class="mt-2">
+                    <a href="#" 
+                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                        <i class="fas fa-calendar-check w-5 h-5 mr-3"></i>
+                        <span class="font-medium">Leave Management</span>
+                    </a>
+                    <a href="#" 
+                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                        <i class="fas fa-clock w-5 h-5 mr-3"></i>
+                        <span class="font-medium">Attendance</span>
+                    </a>
+                    <a href="#" 
+                       class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                        <i class="fas fa-graduation-cap w-5 h-5 mr-3"></i>
+                        <span class="font-medium">Training</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    {% if messages %}
+        <div class="fixed top-0 left-0 w-full p-4">
+            {% for message in messages %}
+                <div class="bg-green-500 text-white p-2 rounded-md mb-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <!-- Main Content -->
+    <main class="ml-0 md:ml-64 pt-16 min-h-screen transition-all duration-300">
+        <div class="p-6">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const profileButton = document.getElementById('profile-menu-button');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            let isDropdownOpen = false;
+
+            // Mobile menu toggle
+            if (mobileMenuButton && sidebar) {
+                mobileMenuButton.addEventListener('click', function() {
+                    sidebar.classList.toggle('-translate-x-full');
+                });
+            }
+
+            // Profile dropdown toggle
+            if (profileButton && profileDropdown) {
+                // Toggle dropdown on button click
+                profileButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    isDropdownOpen = !isDropdownOpen;
+                    if (isDropdownOpen) {
+                        profileDropdown.classList.remove('hidden');
+                    } else {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (isDropdownOpen && !profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.add('hidden');
+                        isDropdownOpen = false;
+                    }
+                });
+
+                // Close dropdown on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && isDropdownOpen) {
+                        profileDropdown.classList.add('hidden');
+                        isDropdownOpen = false;
+                    }
+                });
+            }
+
+            // Add loading animation to logout link
+            const logoutLink = document.querySelector('a[href*="logout"]');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const icon = logoutLink.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-sign-out-alt');
+                        icon.classList.add('fa-spinner', 'fa-spin');
+                    }
+                    setTimeout(function() {
+                        window.location.href = logoutLink.href;
+                    }, 300);
+                });
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

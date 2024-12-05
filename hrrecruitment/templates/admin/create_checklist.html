@@ -1,0 +1,141 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Create Onboarding Checklist{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Create Onboarding Checklist</h1>
+            <a href="{% url 'onboarding_checklists' %}" class="text-blue-500 hover:text-blue-600">
+                Back to Checklists
+            </a>
+        </div>
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-4">
+                    {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">
+                            {% if field.field.widget.input_type == 'textarea' %}
+                            <textarea 
+                                name="{{ field.name }}" 
+                                id="{{ field.id_for_label }}"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                rows="4"
+                            >{{ field.value|default:'' }}</textarea>
+                            {% elif field.field.widget.input_type == 'checkbox' %}
+                            <div class="flex items-center">
+                                {{ field }}
+                                <span class="ml-2 text-sm text-gray-500">{{ field.help_text }}</span>
+                            </div>
+                            {% else %}
+                            <input 
+                                type="{{ field.field.widget.input_type }}"
+                                name="{{ field.name }}"
+                                id="{{ field.id_for_label }}"
+                                value="{{ field.value|default:'' }}"
+                                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            >
+                            {% endif %}
+                        </div>
+                        {% if field.errors %}
+                        <p class="mt-2 text-sm text-red-600">
+                            {{ field.errors.0 }}
+                        </p>
+                        {% endif %}
+                        {% if field.help_text and not field.field.widget.input_type == 'checkbox' %}
+                        <p class="mt-2 text-sm text-gray-500">
+                            {{ field.help_text }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Tasks</h3>
+                    <div id="tasks-container" class="space-y-4">
+                        <!-- Task form fields will be dynamically added here -->
+                    </div>
+                    <button type="button" id="add-task" class="mt-4 text-blue-600 hover:text-blue-900">
+                        + Add Task
+                    </button>
+                </div>
+
+                <div class="flex justify-end pt-6">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Create Checklist
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tasksContainer = document.getElementById('tasks-container');
+        const addTaskButton = document.getElementById('add-task');
+        let taskCount = 0;
+
+        function addTaskFields() {
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'grid grid-cols-12 gap-4 items-start';
+            taskDiv.innerHTML = `
+                <div class="col-span-5">
+                    <input type="text" 
+                           name="task_title_${taskCount}" 
+                           placeholder="Task Title"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-5">
+                    <textarea name="task_description_${taskCount}" 
+                              placeholder="Task Description"
+                              rows="2"
+                              class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                </div>
+                <div class="col-span-1">
+                    <input type="number" 
+                           name="task_order_${taskCount}" 
+                           placeholder="Order"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-1">
+                    <button type="button" 
+                            class="text-red-600 hover:text-red-900"
+                            onclick="this.parentElement.parentElement.remove()">
+                        Remove
+                    </button>
+                </div>
+            `;
+            tasksContainer.appendChild(taskDiv);
+            taskCount++;
+        }
+
+        addTaskButton.addEventListener('click', addTaskFields);
+        
+        // Add first task field by default
+        addTaskFields();
+    });
+</script>
+{% endblock %}
+{% endblock %}

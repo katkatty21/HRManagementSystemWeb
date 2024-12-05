@@ -1,0 +1,93 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Process Payroll Period{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800">Process Payroll Period</h2>
+        </div>
+        <div class="p-6">
+            <div class="mb-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Period Details</h3>
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Start Date</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ period.start_date }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">End Date</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ period.end_date }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Period Type</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ period.period_type }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Status</dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if period.is_processed %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i> Processed
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i> Pending
+                                </span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            {% if not period.is_processed %}
+            <div class="mt-6">
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    Processing this payroll period will:
+                                </p>
+                                <ul class="mt-2 text-sm text-yellow-700 list-disc list-inside">
+                                    <li>Calculate salaries for all employees</li>
+                                    <li>Apply all approved adjustments</li>
+                                    <li>Generate payroll records</li>
+                                    <li>Mark this period as processed</li>
+                                </ul>
+                                <p class="mt-2 text-sm text-yellow-700">
+                                    This action cannot be undone.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <a href="{% url 'payroll_periods' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Cancel
+                        </a>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-play mr-2"></i> Process Payroll
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+            <div class="mt-6">
+                <a href="{% url 'payroll_periods' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Back to Payroll Periods
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
