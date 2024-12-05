@@ -58,19 +58,23 @@
                     <i class="fas fa-tachometer-alt w-5 h-5 mr-3"></i>
                     <span class="font-medium">Dashboard</span>
                 </a>
-                <a href="{% url 'user_attendance_list' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                <a href="{% url 'attendance_record' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
                     <i class="fas fa-calendar-check w-5 h-5 mr-3"></i>
                     <span class="font-medium">Attendance</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                <a href="{% url 'leave_request' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
                     <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
                     <span class="font-medium">Leave Request</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                <a href="{% url 'view_payroll' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'view_payroll' or request.resolver_match.url_name == 'payroll_detail' %}active{% endif %}">
                     <i class="fas fa-wallet w-5 h-5 mr-3"></i>
                     <span class="font-medium">Payroll</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
+                <a href="{% url 'job_postings' %}" 
+                   class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200 {% if request.resolver_match.url_name == 'job_postings' %}bg-blue-50 text-blue-600{% endif %}">
+                    <i class="fas fa-briefcase w-5 h-5 mr-3"></i>
+                    <span class="font-medium">Job Postings</span>
+                <a href="{% url 'performance_feedback' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg group transition-colors duration-200">
                     <i class="fas fa-chart-line w-5 h-5 mr-3"></i>
                     <span class="font-medium">Performance</span>
                 </a>

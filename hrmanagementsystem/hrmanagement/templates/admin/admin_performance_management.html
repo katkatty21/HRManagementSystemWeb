@@ -1,0 +1,63 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Performance Management{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-6 flex-1">
+    <h1 class="text-3xl font-semibold text-gray-700 mb-6">Performance Management</h1>
+
+   <!-- Filter Options -->
+<div class="mb-4">
+    <form method="get" class="flex items-center space-x-2">
+        <label for="filter" class="block text-sm font-medium text-gray-700">Filter by</label>
+        <select id="filter" name="filter" class="block mt-1 border-gray-300 rounded-md shadow-sm">
+            <option value="" {% if not filter %}selected{% endif %}>Select Option</option>
+            <option value="sanction_reports" {% if filter == 'sanction_reports' %}selected{% endif %}>Sanction Reports</option>
+            <option value="self_assessment" {% if filter == 'self_assessment' %}selected{% endif %}>Self Assessment</option>
+            <option value="peer_feedback" {% if filter == 'peer_feedback' %}selected{% endif %}>Peer Feedback</option>
+            <option value="supervisor_feedback" {% if filter == 'supervisor_feedback' %}selected{% endif %}>Supervisor Feedback</option>
+        </select>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Apply</button>
+    </form>
+</div>
+
+    <!-- Display Data -->
+    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <table class="min-w-full table-auto border-collapse">
+            <thead class="bg-gray-100">
+                <tr>
+                    {% for header in headers %}
+                    <th class="px-4 py-2 text-sm text-left text-gray-600 whitespace-nowrap">{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr class="border-t">
+                    {% for field in record.values %}
+                    <td class="px-4 py-2 text-sm text-gray-700 whitespace-normal">{{ field }}</td>
+                    {% endfor %}
+                    {% if filter == 'sanction_reports' %}
+                    <td class="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
+                        <form method="post" action="{% url 'update_status' record.sanction_id %}">
+                            {% csrf_token %}
+                            <div class="flex items-center space-x-2">
+                                <select name="status" class="border-gray-300 rounded-md shadow-sm">
+                                    <option value="Pending" {% if record.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Resolved" {% if record.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                                </select>
+                                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-md">Update</button>
+                            </div>
+                        </form>
+                    </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

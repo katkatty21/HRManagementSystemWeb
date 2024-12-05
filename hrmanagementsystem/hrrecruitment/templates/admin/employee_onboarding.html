@@ -1,0 +1,137 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Employee Onboarding{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Employee Onboarding</h1>
+            <a href="{% url 'onboarding_checklists' %}" class="text-blue-500 hover:text-blue-600">
+                Back to Checklists
+            </a>
+        </div>
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Employee Information -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <div class="px-6 py-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Employee Information</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600"><span class="font-medium">Name:</span> {{ employee.full_name }}</p>
+                        <p class="text-sm text-gray-600"><span class="font-medium">Position:</span> {{ employee.position }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600"><span class="font-medium">Department:</span> {{ employee.department }}</p>
+                        <p class="text-sm text-gray-600"><span class="font-medium">Start Date:</span> {{ employee.date_hired|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if not onboarding %}
+        <!-- Select Checklist Form -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <div class="px-6 py-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Start Onboarding Process</h2>
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="checklist" class="block text-sm font-medium text-gray-700">Select Onboarding Checklist</label>
+                        <select name="checklist" id="checklist" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            {% for checklist in available_checklists %}
+                            <option value="{{ checklist.id }}">{{ checklist.title }} - {{ checklist.department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                            Start Onboarding
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <!-- Onboarding Progress -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Onboarding Progress</h2>
+                    <div class="text-sm text-gray-500">
+                        Started: {{ onboarding.start_date|date:"M d, Y" }}
+                    </div>
+                </div>
+
+                {% with completed_tasks=task_progress|dictsort:"task.order" %}
+                <div class="space-y-6">
+                    {% for progress in completed_tasks %}
+                    <div class="border rounded-lg p-4 {% if progress.status == 'COMPLETED' %}bg-green-50{% endif %}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900">{{ progress.task.title }}</h3>
+                                <p class="text-sm text-gray-500">{{ progress.task.description }}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                {% if progress.status == 'PENDING' %}bg-yellow-100 text-yellow-800
+                                {% elif progress.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800
+                                {% elif progress.status == 'COMPLETED' %}bg-green-100 text-green-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ progress.get_status_display }}
+                            </span>
+                        </div>
+
+                        {% if progress.status == 'COMPLETED' %}
+                        <div class="mt-2 text-sm text-gray-600">
+                            <p><span class="font-medium">Completed:</span> {{ progress.completed_at|date:"M d, Y" }}</p>
+                            {% if progress.notes %}
+                            <p class="mt-1"><span class="font-medium">Notes:</span> {{ progress.notes }}</p>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="mt-2">
+                            <a href="{% url 'update_task_progress' progress.id %}" 
+                               class="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                                Update Progress
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Progress Summary -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-600">
+                            <span class="font-medium">Overall Progress:</span>
+                            {% with completed=task_progress|filter_completed|length %}
+                            {{ completed }} of {{ task_progress|length }} tasks completed
+                            ({{ completed|percentage:task_progress|length }}%)
+                            {% endwith %}
+                        </div>
+                        {% if onboarding.completed_at %}
+                        <div class="text-sm text-green-600 font-medium">
+                            Completed on {{ onboarding.completed_at|date:"M d, Y" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

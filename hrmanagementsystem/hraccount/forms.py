@@ -39,3 +39,25 @@ class EmployeeForm(forms.ModelForm):
             'profile_picture': forms.ClearableFileInput(),
             'date_hired': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class EmployeeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeInformation
+        fields = [
+            'first_name', 
+            'middle_name', 
+            'last_name', 
+            'email', 
+            'sex',
+            'marital_status',
+            'nationality',
+            'active_phone_number',
+            'emergency_contact_name',
+            'emergency_contact_rs',
+            'emergency_contact_number'
+        ]
+        widgets = {
+            'birthdate': forms.DateInput(attrs={'type': 'date'}),
+            'sex': forms.Select(choices=EmployeeInformation.SEX_CHOICES),
+            'marital_status': forms.Select(choices=EmployeeInformation.MARITAL_STATUS_CHOICES),
+        }

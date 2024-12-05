@@ -1,0 +1,81 @@
+{% extends 'base_admin.html' %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Payroll Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .period-info {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .total-row {
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Payroll Report</h1>
+    </div>
+    
+    <div class="period-info">
+        <p><strong>Period:</strong> {{ period.period_type }}</p>
+        <p><strong>Date Range:</strong> {{ period.start_date }} to {{ period.end_date }}</p>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Base Salary</th>
+                <th>Total Bonus</th>
+                <th>Total Deduction</th>
+                <th>Net Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.employee.first_name }} {{ record.employee.last_name }}</td>
+                <td>{{ record.base_salary }}</td>
+                <td>{{ record.total_bonus }}</td>
+                <td>{{ record.total_deduction }}</td>
+                <td>{{ record.net_salary }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Generated on {{ now|date:"F j, Y" }}</p>
+    </div>
+</body>
+</html>

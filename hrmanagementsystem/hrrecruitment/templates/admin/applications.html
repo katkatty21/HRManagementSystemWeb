@@ -1,0 +1,148 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Job Applications</h1>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied Date</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for application in applications %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ application.full_name }}</div>
+                        <div class="text-sm text-gray-500">{{ application.email }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ application.job_posting.title }}</div>
+                        <div class="text-sm text-gray-500">{{ application.job_posting.department.department_name }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <select onchange="updateStatus('{{ application.id }}', this.value)" 
+                                class="text-sm rounded-full px-3 py-1 font-semibold
+                                {% if application.status == 'PENDING' %}bg-yellow-100 text-yellow-800
+                                {% elif application.status == 'REVIEWING' %}bg-blue-100 text-blue-800
+                                {% elif application.status == 'ACCEPTED' %}bg-green-100 text-green-800
+                                {% elif application.status == 'REJECTED' %}bg-red-100 text-red-800{% endif %}">
+                            <option value="PENDING" {% if application.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                            <option value="REVIEWING" {% if application.status == 'REVIEWING' %}selected{% endif %}>Reviewing</option>
+                            <option value="ACCEPTED" {% if application.status == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
+                            <option value="REJECTED" {% if application.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ application.created_at|date:"M d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="viewApplication('{{ application.id }}')" 
+                                class="text-blue-600 hover:text-blue-900 mr-3">View</button>
+                        {% if application.resume %}
+                        <a href="{% url 'hrrecruitment:download_resume' application.id %}" 
+                           class="text-green-600 hover:text-green-900">Resume</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                        No applications received yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Application Details Modal -->
+<div id="applicationModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-xl shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold" id="modalTitle">Application Details</h3>
+            <button onclick="closeModal()" class="text-gray-600 hover:text-gray-900">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="applicationDetails" class="space-y-4">
+            <!-- Application details will be populated here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateStatus(applicationId, newStatus) {
+    fetch(`/recruitment/api/applications/${applicationId}/status/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showMessage('Status updated successfully', false);
+        } else {
+            showMessage(data.message || 'Error updating status', true);
+        }
+    })
+    .catch(error => {
+        showMessage('Error updating status', true);
+    });
+}
+
+function viewApplication(applicationId) {
+    fetch(`/recruitment/api/applications/${applicationId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const details = document.getElementById('applicationDetails');
+            details.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700">Applicant Information</h4>
+                        <p class="mt-1">${data.full_name}</p>
+                        <p class="text-gray-600">${data.email}</p>
+                        <p class="text-gray-600">${data.phone}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700">Position</h4>
+                        <p class="mt-1">${data.job_posting.title}</p>
+                        <p class="text-gray-600">${data.job_posting.department}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700">Cover Letter</h4>
+                        <p class="mt-1 whitespace-pre-wrap">${data.cover_letter}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('applicationModal').classList.remove('hidden');
+        });
+}
+
+function closeModal() {
+    document.getElementById('applicationModal').classList.add('hidden');
+}
+
+function showMessage(message, isError) {
+    // Implement message display logic
+}
+</script>
+{% endblock %}

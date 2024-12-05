@@ -1,50 +1,147 @@
 {% extends 'base_user.html' %}
 
-{% block title %}Attendance Management{% endblock %}
+{% block title %}
+Attendance Dashboard
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto p-6 flex-1">
+<!-- Dashboard Header Section -->
 
-    <h1 class="text-3xl font-semibold text-gray-700 mb-6">Attendance Management</h1>
-
-    <!-- Display success/error messages -->
-    {% if messages %}
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+<section class="bg-gradient-to-r from-blue-700 to-teal-600 text-white text-center py-12 shadow-lg rounded-b-3xl mb-8">
+    <h1 class="text-5xl font-extrabold tracking-wide leading-tight">Attendance Records</h1>
+    <p class="mt-3 text-xl font-medium">Track and manage your attendance details efficiently</p>
+</section>
+<!-- Main Content Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 px-6">
+    <!-- Present Card -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center bg-gradient-to-t from-red-50 to-red-100 hover:scale-105 transform duration-300">
+        <div class="flex justify-center items-center mb-4 space-x-2">
+            <!-- Icon and Days -->
+            <svg class="w-8 h-8 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6l2 2m0 0l2-2m-2 2v12"></path>
+            </svg>
+            <p class="text-4xl font-bold text-red-600">{{ absent_days|default:0 }}</p>
+            
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Absent Days</h3>
+        <p class="text-sm text-gray-500 mt-2">Days employees were absent</p>
     </div>
-    {% endif %}
 
-    <!-- Attendance Records Table -->
-    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
-        <table class="min-w-full table-auto">
-            <thead class="bg-gray-100">
-                <tr class="text-left">
-                    <th class="px-4 py-2 text-sm text-gray-600">Employee Name</th>
-                    <th class="px-4 py-2 text-sm text-gray-600">Date</th>
-                    <th class="px-4 py-2 text-sm text-gray-600">Time In</th>
-                    <th class="px-4 py-2 text-sm text-gray-600">Time Out</th>
-                    <th class="px-4 py-2 text-sm text-gray-600">Total Hours</th>
-                    <th class="px-4 py-2 text-sm text-gray-600">Status</th>
+    <!-- Absent Card -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center bg-gradient-to-t from-green-50 to-green-100 hover:scale-105 transform duration-300">
+        <div class="flex justify-center items-center mb-4 space-x-2">
+            <!-- Icon and Days -->
+            <svg   svg class="w-8 h-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+           
+            <p class="text-4xl font-bold text-green-600">{{ present_days|default:0 }}</p> 
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Present Days</h3>
+        <p class="text-sm text-gray-500 mt-2">Days employees were present</p>
+    </div>
+
+    <!-- Leave Card -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all text-center bg-gradient-to-t from-yellow-50 to-yellow-100 hover:scale-105 transform duration-300">
+        <div class="flex justify-center items-center mb-4 space-x-2">
+            <!-- Icon and Days -->
+            <svg class="w-8 h-8 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v16M8 4v16"></path>
+            </svg>
+            <p class="text-4xl font-bold text-yellow-600">{{ leave_days|default:0 }}</p>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800">Leave Days</h3>
+        <p class="text-sm text-gray-500 mt-2">Days employees were on leave</p>
+    </div>
+</div>
+
+
+<!-- Attendance Records Section -->
+<div class="bg-white rounded-lg shadow-2xl p-8 mb-12 hover:shadow-3xl transition-all">
+
+    <div class="flex justify-between items-center mb-8">
+        <h3 class="text-3xl font-semibold text-blue-600">Attendance Summary</h3>
+
+        <!-- Search Dropdown -->
+        <div class="relative inline-block w-48">
+            <select id="attendance-filter" class="block w-full bg-gray-100 text-gray-800 border border-gray-300 rounded-lg shadow-md focus:ring-2 focus:ring-blue-500 px-4 py-2 appearance-none transition duration-150 ease-in-out">
+                <option value="all" {% if filter_status == 'all' %}selected{% endif %}>All Records</option>
+                <option value="Present" {% if filter_status == 'Present' %}selected{% endif %}>Present</option>
+                <option value="Absent" {% if filter_status == 'Absent' %}selected{% endif %}>Absent</option>
+                <option value="Leave" {% if filter_status == 'Leave' %}selected{% endif %}>Leave</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-auto border-separate border-spacing-2">
+            <thead class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-sm lg:text-base shadow-lg">
+                <tr>
+                    <th class="px-6 py-4 text-left font-medium">Date</th>
+                    <th class="px-6 py-4 text-left font-medium">Status</th>
+                    <th class="px-6 py-4 text-left font-medium">Time In</th>
+                    <th class="px-6 py-4 text-left font-medium">Time Out</th>
+                    <th class="px-6 py-4 text-left font-medium">Working Hours</th>
+                    <th class="px-6 py-4 text-left font-medium">Overtime Hours</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for record in attendance_records %}
-                <tr class="border-t">
-                    <td class="px-4 py-2 text-sm">{{ record.employee }}</td>  <!-- Display employee name -->
-                    <td class="px-4 py-2 text-sm">{{ record.date }}</td>  <!-- Display date -->
-                    <td class="px-4 py-2 text-sm">{{ record.time_in }}</td>  <!-- Display time_in -->
-                    <td class="px-4 py-2 text-sm">{{ record.time_out }}</td>  <!-- Display time_out -->
-                    <td class="px-4 py-2 text-sm">{{ record.total_hours }}</td>  <!-- Display total_hours -->
-                    <td class="px-4 py-2 text-sm">{{ record.get_status_display }}</td>  <!-- Display status (Present/Absent/Leave) -->
+            <tbody id="attendance-tbody">
+                {% for record in page_obj %}
+                <tr class="border-b hover:bg-gray-100 transition-all record-row" data-status="{{ record.status }}">
+                    <td class="px-6 py-4 text-sm lg:text-base font-medium text-gray-800">{{ record.date }}</td>
+                    <td class="px-6 py-4 text-sm lg:text-base">
+                        <span class="text-black px-4 py-2 rounded-full text-xs font-semibold {% if record.status == 'Present' %}bg-green-200 text-green-600{% elif record.status == 'Absent' %}bg-red-200 text-red-600{% else %}bg-yellow-200 text-yellow-600{% endif %}">
+                            {{ record.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm lg:text-base text-gray-700">{{ record.time_in }}</td>
+                    <td class="px-6 py-4 text-sm lg:text-base text-gray-700">{{ record.time_out }}</td>
+                    <td class="px-6 py-4 text-sm lg:text-base text-gray-700">{{ record.working_hours }}</td>
+                    <td class="px-6 py-4 text-sm lg:text-base text-gray-700">{{ record.overtime_hours }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+
+
+        <!-- Pagination Section -->
+        <div class="mt-8 flex justify-between items-center">
+            <span id="pagination-info" class="text-sm text-gray-600">Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} records</span>
+            <div id="pagination-controls" class="flex space-x-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1&status={{ filter_status }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}&status={{ filter_status }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Prev</a>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
+                    {% else %}
+                        <a href="?page={{ num }}&status={{ filter_status }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-blue-600 hover:text-white">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&status={{ filter_status }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}&status={{ filter_status }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Last</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.getElementById('attendance-filter').addEventListener('change', function() {
+        var status = this.value;
+        var currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('status', status);  // Update the status parameter in the URL
+        window.location.href = currentUrl.href;  // Redirect to the new URL
+    });
+</script>
+
 {% endblock %}

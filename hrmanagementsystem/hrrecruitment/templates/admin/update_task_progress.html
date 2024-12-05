@@ -1,0 +1,89 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Update Task Progress{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Update Task Progress</h1>
+            <a href="{% url 'employee_onboarding' progress.employee_onboarding.employee.id %}" class="text-blue-500 hover:text-blue-600">
+                Back to Onboarding
+            </a>
+        </div>
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold text-gray-800">Task Information</h2>
+                <div class="mt-2 space-y-2">
+                    <p class="text-sm text-gray-600"><span class="font-medium">Task:</span> {{ progress.task.title }}</p>
+                    <p class="text-sm text-gray-600"><span class="font-medium">Description:</span> {{ progress.task.description }}</p>
+                    <p class="text-sm text-gray-600">
+                        <span class="font-medium">Current Status:</span>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                            {% if progress.status == 'PENDING' %}bg-yellow-100 text-yellow-800
+                            {% elif progress.status == 'IN_PROGRESS' %}bg-blue-100 text-blue-800
+                            {% elif progress.status == 'COMPLETED' %}bg-green-100 text-green-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ progress.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ field.label }}
+                    </label>
+                    <div class="mt-1">
+                        {% if field.field.widget.input_type == 'textarea' %}
+                        <textarea 
+                            name="{{ field.name }}" 
+                            id="{{ field.id_for_label }}"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            rows="4"
+                        >{{ field.value|default:'' }}</textarea>
+                        {% elif field.field.widget.input_type == 'file' %}
+                        {{ field }}
+                        {% else %}
+                        {{ field }}
+                        {% endif %}
+                    </div>
+                    {% if field.errors %}
+                    <p class="mt-2 text-sm text-red-600">
+                        {{ field.errors.0 }}
+                    </p>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">
+                        {{ field.help_text }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="flex justify-end pt-6">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Update Progress
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

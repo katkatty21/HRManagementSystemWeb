@@ -13,6 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from .models import UserAccount
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.db import IntegrityError
@@ -482,3 +484,54 @@ def delete_employee(request, employee_id):
 
     messages.success(request, "Employee deleted successfully!")
     return redirect('employee_list')
+
+@login_required(login_url='login')
+def admin_user_profile(request):
+    employee = EmployeeInformation.objects.get(employee_id=request.user.account_id)
+    user = request.user
+    username = user.username  # Username from UserAccount model
+    hashed_password = user.password
+    context = {
+        'employee': employee,
+        'username': username,
+        'hashed_password': hashed_password,
+        'user': request.session.get('role', 'Admin'),
+        'user_name': request.session.get('user_name', '')
+    }
+    return render(request, 'admin/userprofile.html', context)
+
+
+@login_required(login_url='login')
+def admin_update_profile(request):
+    employee = EmployeeInformation.objects.get(employee_id=request.user.account_id)
+    
+
+    if request.method == 'POST':
+        # Updating editable fields only
+        employee.first_name = request.POST.get('first_name')
+        employee.middle_name = request.POST.get('middle_name')  # Optional, may be blank
+        employee.last_name = request.POST.get('last_name')
+        employee.sex = request.POST.get('sex')
+        employee.marital_status = request.POST.get('marital_status')
+        employee.nationality = request.POST.get('nationality')
+        employee.address = request.POST.get('address')
+        employee.city = request.POST.get('city')
+        employee.province = request.POST.get('province')
+        employee.zip_code = request.POST.get('zip_code')
+        employee.active_phone_number = request.POST.get('active_phone_number')
+        employee.email = request.POST.get('email')
+        employee.emergency_contact_name = request.POST.get('emergency_contact_name')
+        employee.emergency_contact_rs = request.POST.get('emergency_contact_rs')
+        employee.emergency_contact_number = request.POST.get('emergency_contact_number')
+        employee.save()
+
+        messages.success(request, "Your profile has been updated successfully!")
+        return redirect('admin_user_profile')
+
+    # Render the update form
+    context = {
+        'employee': employee,
+        'sex_choices': EmployeeInformation.SEX_CHOICES,
+        'marital_status_choices': EmployeeInformation.MARITAL_STATUS_CHOICES,
+    }
+    return render(request, 'admin/update_profile.html', context)

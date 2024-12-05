@@ -1,0 +1,214 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Manage Payroll Adjustments{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Manage Payroll Adjustments</h4>
+                </div>
+                <div class="card-body">
+                    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAdjustmentModal">
+                        Add New Adjustment
+                    </button>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Period</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                    <th>Date Added</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for adjustment in adjustments %}
+                                <tr>
+                                    <td>{{ adjustment.employee.get_full_name }}</td>
+                                    <td>{{ adjustment.payroll_period }}</td>
+                                    <td>
+                                        {% if adjustment.adjustment_type == 'BONUS' %}
+                                        <span class="badge bg-success">{{ adjustment.get_adjustment_type_display }}</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">{{ adjustment.get_adjustment_type_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ adjustment.amount }}</td>
+                                    <td>{{ adjustment.description }}</td>
+                                    <td>{{ adjustment.date_added|date:"Y-m-d H:i" }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning edit-adjustment" 
+                                                data-id="{{ adjustment.id }}"
+                                                data-employee="{{ adjustment.employee.id }}"
+                                                data-type="{{ adjustment.adjustment_type }}"
+                                                data-amount="{{ adjustment.amount }}"
+                                                data-description="{{ adjustment.description }}"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editAdjustmentModal">
+                                            Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-adjustment" 
+                                                data-id="{{ adjustment.id }}"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteAdjustmentModal">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No adjustments found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Adjustment Modal -->
+<div class="modal fade" id="addAdjustmentModal" tabindex="-1" aria-labelledby="addAdjustmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAdjustmentModalLabel">Add New Adjustment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'hrmanagement:payroll_adjustments' %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.employee.id_for_label }}" class="form-label">Employee</label>
+                        {{ form.employee|add_class:"form-select" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.adjustment_type.id_for_label }}" class="form-label">Adjustment Type</label>
+                        {{ form.adjustment_type|add_class:"form-select" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.amount.id_for_label }}" class="form-label">Amount</label>
+                        {{ form.amount|add_class:"form-control" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description|add_class:"form-control" }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Adjustment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Adjustment Modal -->
+<div class="modal fade" id="editAdjustmentModal" tabindex="-1" aria-labelledby="editAdjustmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAdjustmentModalLabel">Edit Adjustment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="" id="editAdjustmentForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.employee.id_for_label }}" class="form-label">Employee</label>
+                        {{ form.employee|add_class:"form-select" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.adjustment_type.id_for_label }}" class="form-label">Adjustment Type</label>
+                        {{ form.adjustment_type|add_class:"form-select" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.amount.id_for_label }}" class="form-label">Amount</label>
+                        {{ form.amount|add_class:"form-control" }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description|add_class:"form-control" }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Adjustment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Adjustment Modal -->
+<div class="modal fade" id="deleteAdjustmentModal" tabindex="-1" aria-labelledby="deleteAdjustmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAdjustmentModalLabel">Delete Adjustment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this adjustment?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="" id="deleteAdjustmentForm" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Edit adjustment
+        const editButtons = document.querySelectorAll('.edit-adjustment');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const employee = this.dataset.employee;
+                const type = this.dataset.type;
+                const amount = this.dataset.amount;
+                const description = this.dataset.description;
+
+                const form = document.querySelector('#editAdjustmentForm');
+                form.action = `{% url 'hrmanagement:payroll_adjustments' %}?id=${id}`;
+                
+                form.querySelector('#id_employee').value = employee;
+                form.querySelector('#id_adjustment_type').value = type;
+                form.querySelector('#id_amount').value = amount;
+                form.querySelector('#id_description').value = description;
+            });
+        });
+
+        // Delete adjustment
+        const deleteButtons = document.querySelectorAll('.delete-adjustment');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const form = document.querySelector('#deleteAdjustmentForm');
+                form.action = `{% url 'hrmanagement:payroll_adjustments' %}?id=${id}`;
+            });
+        });
+    });
+</script>
+{% endblock %}

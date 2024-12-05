@@ -21,7 +21,10 @@ urlpatterns = [
     path('hr/admin/employees/add/', views.add_employee, name='add_employee'),
     path('hr/admin/employees/edit/<uuid:employee_id>/', views.edit_employee, name='edit_employee'),
     path('hr/admin/employees/delete/<uuid:employee_id>/', views.delete_employee, name='delete_employee'),
+    path('hr/admin/profile/', views.admin_user_profile, name='admin_user_profile'),
+    path('hr/admin/update/profile/', views.admin_update_profile, name='admin_update_profile'),
     
     path('hr/user/home/', views.user_home, name='user_home'),
     path('hrmanagement/', include('hrmanagement.urls')),
+    path('hrrecruitment/', include('hrrecruitment.urls')),
 ]

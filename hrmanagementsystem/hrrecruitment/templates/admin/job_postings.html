@@ -1,0 +1,261 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Job Postings Management{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Job Postings Management</h1>
+        <button onclick="openCreateModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+            <i class="fas fa-plus mr-2"></i> Create New Job Posting
+        </button>
+    </div>
+
+    <div id="message-container" class="mb-4 hidden">
+        <div class="p-4 rounded message-content"></div>
+    </div>
+
+    <!-- Job Postings Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posted Date</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for posting in job_postings %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ posting.title }}</div>
+                        <div class="text-sm text-gray-500">{{ posting.employment_type }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ posting.department.department_name }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {% if posting.status == 'OPEN' %}bg-green-100 text-green-800
+                            {% elif posting.status == 'CLOSED' %}bg-red-100 text-red-800
+                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ posting.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ posting.created_at|date:"M d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button type="button" onclick="editPosting('{{ posting.id }}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                        <button type="button" onclick="deletePosting('{{ posting.id }}')" class="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="jobPostingModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold" id="modalTitle">Create Job Posting</h3>
+            <button onclick="closeModal()" class="text-gray-600 hover:text-gray-900">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="jobPostingForm" method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" name="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Department</label>
+                        <select name="department" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Select Department</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.department_id }}">{{ dept.department_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Employment Type</label>
+                        <select name="employment_type" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Select Type</option>
+                            <option value="FULL_TIME">Full Time</option>
+                            <option value="PART_TIME">Part Time</option>
+                            <option value="CONTRACT">Contract</option>
+                            <option value="INTERNSHIP">Internship</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text" name="location" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Status</label>
+                        <select name="status" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="DRAFT">Draft</option>
+                            <option value="OPEN">Open</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea name="description" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Requirements</label>
+                        <textarea name="requirements" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Qualifications</label>
+                        <textarea name="qualifications" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Benefits</label>
+                        <textarea name="benefits" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Salary Range</label>
+                        <input type="text" name="salary_range" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Closing Date</label>
+                        <input type="date" name="closing_date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button type="button" onclick="closeModal()" class="mr-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                    Save Job Posting
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener for status changes
+    document.querySelectorAll('select[name="status"]').forEach(select => {
+        select.addEventListener('change', function(e) {
+            e.preventDefault(); // Prevent default form submission
+        });
+    });
+});
+
+function openCreateModal() {
+    document.getElementById('modalTitle').textContent = 'Create Job Posting';
+    document.getElementById('jobPostingForm').reset();
+    document.getElementById('jobPostingModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('jobPostingModal').classList.add('hidden');
+}
+
+function showMessage(message, isError = false) {
+    const container = document.getElementById('message-container');
+    const content = container.querySelector('.message-content');
+    
+    content.textContent = message;
+    content.className = 'p-4 rounded message-content ' + 
+        (isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700');
+    
+    container.classList.remove('hidden');
+    
+    setTimeout(() => {
+        container.classList.add('hidden');
+    }, 3000);
+}
+
+function editPosting(postingId) {
+    // Prevent default navigation
+    event.preventDefault();
+    // Your edit posting logic here
+}
+
+function deletePosting(postingId) {
+    // Prevent default navigation
+    event.preventDefault();
+    // Your delete posting logic here
+}
+
+document.getElementById('jobPostingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch("{% url 'hrrecruitment:create_job_posting' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showMessage(data.message);
+            closeModal();
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 1000);
+        } else {
+            const errorMessages = [];
+            if (typeof data.errors === 'object') {
+                Object.entries(data.errors).forEach(([field, errors]) => {
+                    errorMessages.push(`${field}: ${errors.join(', ')}`);
+                });
+                showMessage(errorMessages.join('\n'), true);
+            } else {
+                showMessage(data.message || 'An error occurred while saving the job posting.', true);
+            }
+        }
+    })
+    .catch(error => {
+        showMessage('An error occurred while saving the job posting.', true);
+        console.error('Error:', error);
+    });
+});
+
+// Close modal when clicking outside
+document.getElementById('jobPostingModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}
