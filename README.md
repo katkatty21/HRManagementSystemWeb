@@ -22,7 +22,7 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
+    <li><a href="#gant-chart">Gant Chart</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -72,5 +72,9 @@ Econding - UTF8
 Tablespace -pd_default
 Collation and Character - english / en_US/ - Security - Privileges - Grantee fyang - else ALL 4. create your models, modify setting.py
 
-#DJANGO ADMIN
+#Gant Chart
+https://docs.google.com/spreadsheets/d/100kTUpP4Sychp47k7l7S2iiFd9uNb3wG9xwUYE7GOIQ/edit?gid=0#gid=0
+
+
+
 
