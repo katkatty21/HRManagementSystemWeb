@@ -34,12 +34,11 @@ The HR Management System is a comprehensive platform designed to streamline and 
 
 Key features include:
 
-- Employee Profiles: Centralized database for managing employee records and personal information.
+- Employee Profiles: Centralized database for managing employee records and personal information. Automated Password generation sent through email.
 - Attendance Tracking: Efficient tracking of attendance, leave, and absences, providing transparency and accountability.
-- Payroll Management: Automated calculations, deductions, and payments with secure storage and accessibility
-- Performance Feedback: Tools to facilitate continuous performance tracking, goal-setting, and reviews.
-- Recruitment: Simplifies the hiring process with applicant tracking, resume management, and scheduling capabilities.
-- Reporting and Analytics: Real-time insights into HR data to support decision-making and compliance.
+- Payroll Management: Salary calculations, deductions, and payments with secure storage and accessibility and downloadable pdf paylisp.
+- Performance Feedback: Tools to facilitate continuous performance tracking, sanctions, self assessment and reviews.
+- Recruitment: Simplifies the hiring process with applicant tracking, resume management, job openings and posting, and interviews .
 
 #Reminders
 --Don't use previous project
@@ -74,3 +73,4 @@ Tablespace -pd_default
 Collation and Character - english / en_US/ - Security - Privileges - Grantee fyang - else ALL 4. create your models, modify setting.py
 
 #DJANGO ADMIN
+
