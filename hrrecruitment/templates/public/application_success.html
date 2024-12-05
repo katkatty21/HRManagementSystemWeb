@@ -1,0 +1,81 @@
+{% extends 'hrrecruitment/public/base_public.html' %}
+{% load static %}
+
+{% block title %}Application Submitted{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-2xl mx-auto text-center">
+        <!-- Success Icon -->
+        <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-8">
+            <svg class="h-16 w-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <!-- Success Message -->
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Application Submitted Successfully!</h1>
+        <p class="text-lg text-gray-600 mb-8">
+            Thank you for applying for the position of {{ application.job_posting.title }}. We have received your application and will review it shortly.
+        </p>
+
+        <!-- Application Details -->
+        <div class="bg-white shadow rounded-lg p-6 mb-8 text-left">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Application Details</h2>
+            <dl class="grid grid-cols-1 gap-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Reference Number</dt>
+                    <dd class="text-base text-gray-900">{{ application.id }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Position</dt>
+                    <dd class="text-base text-gray-900">{{ application.job_posting.title }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Department</dt>
+                    <dd class="text-base text-gray-900">{{ application.job_posting.department }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Submitted On</dt>
+                    <dd class="text-base text-gray-900">{{ application.applied_at|date:"F j, Y, g:i a" }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-8 text-left">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">What's Next?</h3>
+            <ul class="space-y-3 text-blue-800">
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-600 mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Our HR team will review your application
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-600 mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    If your profile matches our requirements, we'll contact you for an interview
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-5 w-5 text-blue-600 mt-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    You'll receive updates about your application status via email
+                </li>
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-x-4">
+            <a href="{% url 'public_job_listings' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                View More Opportunities
+            </a>
+            <a href="#" onclick="window.print(); return false;" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Print Details
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
